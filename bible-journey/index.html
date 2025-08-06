@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Bible Journey</title>
+    <style>
+        :root {
+            --tg-theme-bg-color: #f0f2f5;
+            --tg-theme-text-color: #000000;
+            --tg-theme-hint-color: #7d8b99;
+            --tg-theme-button-color: #3390ec;
+            --tg-theme-button-text-color: #ffffff;
+            --tg-theme-secondary-bg-color: #ffffff;
+            --progress-bar-color: #4caf50;
+            --progress-bar-background: #e0e0e0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            padding: 15px;
+            color: var(--tg-theme-text-color);
+            background-color: var(--tg-theme-bg-color);
+            margin: 0;
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        .header p {
+            color: var(--tg-theme-hint-color);
+            margin: 5px 0 0 0;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--tg-theme-secondary-bg-color);
+            padding-bottom: 8px;
+        }
+        .book-list {
+            display: grid;
+            gap: 12px;
+        }
+        .book-item {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background-color: var(--tg-theme-secondary-bg-color);
+            border-radius: 10px;
+        }
+        .book-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .book-name {
+            font-weight: 500;
+        }
+        .progress-text {
+            font-size: 14px;
+            color: var(--tg-theme-hint-color);
+            font-weight: 500;
+        }
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--progress-bar-background);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--progress-bar-color);
+            border-radius: 4px;
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Bible Journey</h1>
+        <p id="welcome-text">Progres pembacaan Alkitab Anda.</p>
+    </div>
+
+    <div id="bible-journey-container">
+        <!-- Daftar kitab akan digenerate oleh JavaScript di sini -->
+    </div>
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+
+        // --- DATA KITAB ALKITAB ---
+        // Di aplikasi nyata, Anda akan mengambil data ini (terutama 'progress') dari API.
+        // GET /api/bible-journey?user_id=...
+        const bibleBooks = [
+            // Perjanjian Lama
+            { name: 'Kejadian', testament: 'OT', progress: 100 },
+            { name: 'Keluaran', testament: 'OT', progress: 75 },
+            { name: 'Imamat', testament: 'OT', progress: 50 },
+            { name: 'Bilangan', testament: 'OT', progress: 20 },
+            { name: 'Ulangan', testament: 'OT', progress: 0 },
+            { name: 'Yosua', testament: 'OT', progress: 0 },
+            { name: 'Hakim-hakim', testament: 'OT', progress: 10 },
+            { name: 'Rut', testament: 'OT', progress: 100 },
+            { name: '1 Samuel', testament: 'OT', progress: 0 },
+            { name: '2 Samuel', testament: 'OT', progress: 0 },
+            { name: '1 Raja-raja', testament: 'OT', progress: 0 },
+            { name: '2 Raja-raja', testament: 'OT', progress: 0 },
+            { name: '1 Tawarikh', testament: 'OT', progress: 0 },
+            { name: '2 Tawarikh', testament: 'OT', progress: 0 },
+            { name: 'Ezra', testament: 'OT', progress: 0 },
+            { name: 'Nehemia', testament: 'OT', progress: 0 },
+            { name: 'Ester', testament: 'OT', progress: 0 },
+            { name: 'Ayub', testament: 'OT', progress: 5 },
+            { name: 'Mazmur', testament: 'OT', progress: 80 },
+            { name: 'Amsal', testament: 'OT', progress: 90 },
+            { name: 'Pengkhotbah', testament: 'OT', progress: 100 },
+            { name: 'Kidung Agung', testament: 'OT', progress: 0 },
+            { name: 'Yesaya', testament: 'OT', progress: 0 },
+            { name: 'Yeremia', testament: 'OT', progress: 0 },
+            { name: 'Ratapan', testament: 'OT', progress: 0 },
+            { name: 'Yehezkiel', testament: 'OT', progress: 0 },
+            { name: 'Daniel', testament: 'OT', progress: 0 },
+            { name: 'Hosea', testament: 'OT', progress: 0 },
+            { name: 'Yoel', testament: 'OT', progress: 0 },
+            { name: 'Amos', testament: 'OT', progress: 0 },
+            { name: 'Obaja', testament: 'OT', progress: 0 },
+            { name: 'Yunus', testament: 'OT', progress: 100 },
+            { name: 'Mikha', testament: 'OT', progress: 0 },
+            { name: 'Nahum', testament: 'OT', progress: 0 },
+            { name: 'Habakuk', testament: 'OT', progress: 0 },
+            { name: 'Zefanya', testament: 'OT', progress: 0 },
+            { name: 'Hagai', testament: 'OT', progress: 0 },
+            { name: 'Zakharia', testament: 'OT', progress: 0 },
+            { name: 'Maleakhi', testament: 'OT', progress: 0 },
+            // Perjanjian Baru
+            { name: 'Matius', testament: 'NT', progress: 100 },
+            { name: 'Markus', testament: 'NT', progress: 100 },
+            { name: 'Lukas', testament: 'NT', progress: 100 },
+            { name: 'Yohanes', testament: 'NT', progress: 95 },
+            { name: 'Kisah Para Rasul', testament: 'NT', progress: 60 },
+            { name: 'Roma', testament: 'NT', progress: 30 },
+            { name: '1 Korintus', testament: 'NT', progress: 0 },
+            { name: '2 Korintus', testament: 'NT', progress: 0 },
+            { name: 'Galatia', testament: 'NT', progress: 0 },
+            { name: 'Efesus', testament: 'NT', progress: 0 },
+            { name: 'Filipi', testament: 'NT', progress: 0 },
+            { name: 'Kolose', testament: 'NT', progress: 0 },
+            { name: '1 Tesalonika', testament: 'NT', progress: 0 },
+            { name: '2 Tesalonika', testament: 'NT', progress: 0 },
+            { name: '1 Timotius', testament: 'NT', progress: 0 },
+            { name: '2 Timotius', testament: 'NT', progress: 0 },
+            { name: 'Titus', testament: 'NT', progress: 0 },
+            { name: 'Filemon', testament: 'NT', progress: 0 },
+            { name: 'Ibrani', testament: 'NT', progress: 0 },
+            { name: 'Yakobus', testament: 'NT', progress: 0 },
+            { name: '1 Petrus', testament: 'NT', progress: 0 },
+            { name: '2 Petrus', testament: 'NT', progress: 0 },
+            { name: '1 Yohanes', testament: 'NT', progress: 0 },
+            { name: '2 Yohanes', testament: 'NT', progress: 0 },
+            { name: '3 Yohanes', testament: 'NT', progress: 0 },
+            { name: 'Yudas', testament: 'NT', progress: 0 },
+            { name: 'Wahyu', testament: 'NT', progress: 15 },
+        ];
+
+        function renderBibleJourney(books) {
+            const container = document.getElementById('bible-journey-container');
+            container.innerHTML = ''; // Kosongkan container
+
+            // Pisahkan kitab Perjanjian Lama dan Baru
+            const oldTestamentBooks = books.filter(b => b.testament === 'OT');
+            const newTestamentBooks = books.filter(b => b.testament === 'NT');
+
+            // Fungsi untuk membuat satu seksi (PL atau PB)
+            const createSection = (title, bookList) => {
+                let sectionHtml = `<div class="section-title">${title}</div><div class="book-list">`;
+                
+                bookList.forEach(book => {
+                    sectionHtml += `
+                        <div class="book-item">
+                            <div class="book-info">
+                                <span class="book-name">${book.name}</span>
+                                <span class="progress-text">${book.progress}%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill" style="width: ${book.progress}%;"></div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                sectionHtml += `</div>`;
+                return sectionHtml;
+            };
+
+            // Render kedua seksi
+            container.innerHTML += createSection('Perjanjian Lama', oldTestamentBooks);
+            container.innerHTML += createSection('Perjanjian Baru', newTestamentBooks);
+        }
+
+        // Panggil fungsi render saat halaman dimuat
+        window.addEventListener('load', () => {
+            renderBibleJourney(bibleBooks);
+        });
+
+    </script>
+</body>
+</html>
