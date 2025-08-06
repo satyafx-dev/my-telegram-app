@@ -92,7 +92,6 @@
         <p id="welcome-text">Halo! Mohon lengkapi data di bawah ini.</p>
 
         <div id="registration-form" style="display: none;">
-            <!-- Form untuk melengkapi data -->
             <div class="form-group">
                 <label for="language-select">Bahasa Utama</label>
                 <select id="language-select">
@@ -101,7 +100,7 @@
                     <option value="lang_ch">Mandarin</option>
                     <option value="lang_ru">Rusia</option>
                     <option value="lang_he">Hebrew</option>
-                    <option value="lang_jp">Japanesse</option>                    
+                    <option value="lang_jp">Japanesse</option>
                 </select>
             </div>
 
@@ -112,30 +111,27 @@
                 </select>
             </div>
             
-            <!-- Elemen untuk menampilkan pesan error jika ada -->
             <div id="error-message" class="error" style="display: none;"></div>
-
         </div>
         
-        <!-- Elemen loading awal -->
         <div id="initial-loading" class="loading">
             <p>Mempersiapkan formulir...</p>
         </div>
-
     </div>
 
-    <!-- Tombol utama yang "mengambang" di bawah -->
     <button id="main-button" disabled>Simpan Data</button>
 
-    <!-- Script Telegram -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
         const tg = window.Telegram.WebApp;
 
         // ===================================================================
-        // PENTING: Ganti URL di bawah ini dengan URL Webhook dari workflow Anda!
+        // PENTING: Ganti URL di bawah ini dengan URL Webhook PRODUKSI dari n8n!
         // ===================================================================
-        const API_BASE_URL = "https://YOUR_WORKFLOW_WEBHOOK_URL"; 
+        const GET_CHURCHES_URL = "https://theos-automata.com/webhook/PASTE_YOUR_FULL_PRODUCTION_URL_HERE";
+        
+        // URL untuk menyimpan data (buat webhook baru untuk ini)
+        const UPDATE_PROFILE_URL = "https://theos-automata.com/webhook/PASTE_URL_FOR_SAVING_DATA_HERE";
 
         // Elemen UI
         const welcomeText = document.getElementById('welcome-text');
@@ -146,51 +142,41 @@
         const mainButton = document.getElementById('main-button');
         const errorMessage = document.getElementById('error-message');
 
-        // Fungsi untuk menampilkan error
         function showError(message) {
-            errorMessage.innerHTML = message; // Menggunakan innerHTML agar bisa render link
+            errorMessage.innerHTML = message;
             errorMessage.style.display = 'block';
             initialLoading.style.display = 'none';
-            form.style.display = 'block'; // Tampilkan form agar user tahu konteksnya
-            churchSelect.disabled = true; // Matikan dropdown gereja jika ada error
-            mainButton.disabled = true; // Matikan tombol simpan
+            form.style.display = 'block';
+            churchSelect.disabled = true;
+            mainButton.disabled = true;
         }
 
-        // 1. Inisialisasi Aplikasi
         tg.ready();
-        tg.expand(); // Memperluas tampilan web app
+        tg.expand();
 
-        // Ambil data pengguna dari Telegram
         const user = tg.initDataUnsafe.user;
         if (user && user.first_name) {
             welcomeText.textContent = `Halo, ${user.first_name}! Mohon lengkapi data di bawah ini.`;
         }
         
-        // 2. Mengambil daftar gereja dari API
         async function fetchChurches() {
-            // PERBAIKAN: Cek apakah URL API sudah diubah dari placeholder
-            if (API_BASE_URL === "https://YOUR_WORKFLOW_WEBHOOK_URL") {
-                showError("<b>Kesalahan Konfigurasi.</b><br>URL API belum diatur di dalam kode. Mohon hubungi developer untuk memperbaikinya.");
-                return; // Hentikan fungsi jika URL tidak valid
+            if (GET_CHURCHES_URL.includes("PASTE_YOUR_FULL_PRODUCTION_URL_HERE")) {
+                showError("<b>Kesalahan Konfigurasi.</b><br>URL untuk mengambil data gereja belum diatur.");
+                return;
             }
 
             try {
-                // Ganti '/get-churches' dengan nama endpoint Anda jika berbeda
-                const response = await fetch(`${API_BASE_URL}/get-churches`);
+                const response = await fetch(GET_CHURCHES_URL);
                 if (!response.ok) {
-                    // Beri pesan error yang lebih jelas berdasarkan status
-                    throw new Error(`Gagal mengambil data gereja. Status: ${response.status} ${response.statusText}`);
+                    throw new Error(`Gagal mengambil data gereja. Status: ${response.status}`);
                 }
                 const churches = await response.json();
 
-                // Kosongkan pilihan lama
                 churchSelect.innerHTML = '<option value="">-- Pilih Gereja --</option>';
-
-                // Isi dropdown dengan data gereja dari API
                 churches.forEach(church => {
                     const option = document.createElement('option');
-                    option.value = church.id; // Asumsi ada field 'id'
-                    option.textContent = `${church.name}, ${church.city}`; // Asumsi ada field 'name' dan 'city'
+                    option.value = church.id;
+                    option.textContent = `${church.name}, ${church.city}`;
                     churchSelect.appendChild(option);
                 });
 
@@ -201,41 +187,40 @@
 
             } catch (error) {
                 console.error("Error fetching churches:", error);
-                // PERBAIKAN: Tampilkan pesan error yang lebih membantu
                 showError(`<b>Tidak dapat terhubung ke server.</b><br>Pastikan URL API sudah benar dan workflow API Anda aktif. <br><small>Detail: ${error.message}</small>`);
             }
         }
 
-        // 3. Menangani Aksi Simpan
         mainButton.addEventListener('click', async () => {
+            if (UPDATE_PROFILE_URL.includes("PASTE_URL_FOR_SAVING_DATA_HERE")) {
+                tg.showAlert("Kesalahan Konfigurasi: URL untuk menyimpan data belum diatur.");
+                return;
+            }
+
             const selectedLanguage = languageSelect.value;
             const selectedChurchId = churchSelect.value;
 
             if (!selectedChurchId) {
-                tg.showAlert('Silakan pilih gereja Anda.'); // Gunakan alert dari Telegram
+                tg.showAlert('Silakan pilih gereja Anda.');
                 return;
             }
 
-            // Tampilkan loading di tombol
             mainButton.disabled = true;
             mainButton.textContent = 'Menyimpan...';
-            tg.MainButton.showProgress(); // Tampilkan loading di tombol utama Telegram juga
+            tg.MainButton.showProgress();
 
             const dataToSend = {
                 chat_id: user.id,
-                user_id: user.id, // Sesuai dengan struktur tabel Anda
+                user_id: user.id,
                 bahasa: selectedLanguage,
                 church_id: selectedChurchId,
-                initData: tg.initData // Kirim initData untuk verifikasi di backend
+                initData: tg.initData
             };
 
             try {
-                // Ganti '/update-profile' dengan nama endpoint Anda jika berbeda
-                const response = await fetch(`${API_BASE_URL}/update-profile`, {
+                const response = await fetch(UPDATE_PROFILE_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dataToSend),
                 });
 
@@ -243,22 +228,19 @@
                     throw new Error(`Gagal menyimpan data. Status: ${response.status}`);
                 }
 
-                // Jika berhasil, kirim pesan konfirmasi dan tutup
                 tg.sendData(JSON.stringify({ status: 'success', message: 'Profil berhasil diperbarui!' }));
                 tg.close();
 
             } catch (error) {
                 console.error("Error saving data:", error);
-                tg.showAlert(error.message); // Tampilkan error ke pengguna via alert Telegram
+                tg.showAlert(error.message);
                 mainButton.disabled = false;
                 mainButton.textContent = 'Simpan Data';
                 tg.MainButton.hideProgress();
             }
         });
 
-        // Jalankan fungsi untuk mengambil data gereja saat halaman dimuat
         fetchChurches();
-
     </script>
 </body>
 </html>
