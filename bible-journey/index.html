@@ -22,22 +22,26 @@
             background-color: var(--tg-theme-bg-color);
             margin: 0;
         }
-        .view {
-            display: none; /* Semua view disembunyikan secara default */
-        }
-        .view.active {
-            display: block; /* Hanya view aktif yang ditampilkan */
-        }
+        .view { display: none; }
+        .view.active { display: block; }
         .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
-        }
-        .header p {
-            color: var(--tg-theme-hint-color);
-            margin: 5px 0 0 0;
+        .header-main h1 { font-size: 24px; margin: 0; }
+        .header-main p { color: var(--tg-theme-hint-color); margin: 5px 0 0 0; }
+        .header-action .continue-button {
+            background-color: var(--tg-theme-button-color);
+            color: var(--tg-theme-button-text-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: none; /* Sembunyi by default */
         }
         .section-title {
             font-size: 18px;
@@ -47,10 +51,7 @@
             border-bottom: 2px solid #e9ecef;
             padding-bottom: 8px;
         }
-        .book-list, .pericope-list {
-            display: grid;
-            gap: 12px;
-        }
+        .book-list, .pericope-list { display: grid; gap: 12px; }
         .book-item, .pericope-item {
             display: flex;
             flex-direction: column;
@@ -60,27 +61,16 @@
             cursor: pointer;
             transition: transform 0.2s ease;
         }
-        .book-item:active, .pericope-item:active {
-            transform: scale(0.98);
-        }
+        .book-item:active, .pericope-item:active { transform: scale(0.98); }
         .book-info {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
         }
-        .book-name, .pericope-title {
-            font-weight: 500;
-        }
-        .pericope-reference {
-            font-size: 13px;
-            color: var(--tg-theme-hint-color);
-        }
-        .progress-text {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color);
-            font-weight: 500;
-        }
+        .book-name, .pericope-title { font-weight: 500; }
+        .pericope-reference { font-size: 13px; color: var(--tg-theme-hint-color); }
+        .progress-text { font-size: 14px; color: var(--tg-theme-hint-color); font-weight: 500; }
         .progress-bar-container {
             width: 100%;
             height: 8px;
@@ -94,20 +84,9 @@
             border-radius: 4px;
             transition: width 0.5s ease-in-out;
         }
-        .loading, .error {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--tg-theme-hint-color);
-        }
-        .detail-content h3 {
-            font-size: 18px;
-            color: var(--tg-theme-text-color);
-        }
-        .detail-content p {
-            font-size: 15px;
-            line-height: 1.6;
-            color: var(--tg-theme-text-color);
-        }
+        .loading, .error { text-align: center; padding: 40px 20px; color: var(--tg-theme-hint-color); }
+        .detail-content h3 { font-size: 18px; color: var(--tg-theme-text-color); }
+        .detail-content p { font-size: 15px; line-height: 1.6; color: var(--tg-theme-text-color); }
     </style>
 </head>
 <body>
@@ -115,8 +94,13 @@
     <!-- View 1: Daftar Kitab (Halaman Utama) -->
     <div id="journey-view" class="view active">
         <div class="header">
-            <h1>Bible Journey</h1>
-            <p>Progres pembacaan Alkitab Anda.</p>
+            <div class="header-main">
+                <h1>Bible Journey</h1>
+                <p>Progres pembacaan Alkitab Anda.</p>
+            </div>
+            <div class="header-action">
+                <button id="continue-button" class="continue-button">Lanjutkan</button>
+            </div>
         </div>
         <div id="bible-journey-container">
             <div class="loading"><p>Memuat progres Anda...</p></div>
@@ -126,8 +110,10 @@
     <!-- View 2: Daftar Perikop -->
     <div id="pericopes-view" class="view">
         <div class="header">
-            <h1 id="pericopes-title"></h1>
-            <p>Pilih perikop untuk dibaca.</p>
+            <div class="header-main">
+                <h1 id="pericopes-title"></h1>
+                <p>Pilih perikop untuk dibaca.</p>
+            </div>
         </div>
         <div id="pericopes-list-container">
              <div class="loading"><p>Memuat daftar perikop...</p></div>
@@ -137,8 +123,10 @@
     <!-- View 3: Detail Perikop -->
     <div id="detail-view" class="view">
          <div class="header">
-            <h1 id="detail-title"></h1>
-            <p id="detail-reference"></p>
+            <div class="header-main">
+                <h1 id="detail-title"></h1>
+                <p id="detail-reference"></p>
+            </div>
         </div>
         <div id="detail-content-container" class="detail-content">
             <div class="loading"><p>Memuat detail...</p></div>
@@ -159,12 +147,14 @@
         // --- State Management ---
         let currentView = 'journey';
         let user;
-        let pericopesDataCache = {}; // Cache untuk data perikop
+        let pericopesDataCache = {};
+        let nextPericopeData = null; // Menyimpan data untuk tombol "Lanjutkan"
 
         // --- Elemen Tampilan ---
         const journeyView = document.getElementById('journey-view');
         const pericopesView = document.getElementById('pericopes-view');
         const detailView = document.getElementById('detail-view');
+        const continueButton = document.getElementById('continue-button');
 
         // --- Template Daftar Kitab ---
         const allBibleBooks = ['Kejadian', 'Keluaran', 'Imamat', 'Bilangan', 'Ulangan', 'Yosua', 'Hakim-hakim', 'Rut', '1 Samuel', '2 Samuel', '1 Raja-raja', '2 Raja-raja', '1 Tawarikh', '2 Tawarikh', 'Ezra', 'Nehemia', 'Ester', 'Ayub', 'Mazmur', 'Amsal', 'Pengkhotbah', 'Kidung Agung', 'Yesaya', 'Yeremia', 'Ratapan', 'Yehezkiel', 'Daniel', 'Hosea', 'Yoel', 'Amos', 'Obaja', 'Yunus', 'Mikha', 'Nahum', 'Habakuk', 'Zefanya', 'Hagai', 'Zakharia', 'Maleakhi','Matius', 'Markus', 'Lukas', 'Yohanes', 'Kisah Para Rasul', 'Roma', '1 Korintus', '2 Korintus', 'Galatia', 'Efesus', 'Filipi', 'Kolose', '1 Tesalonika', '2 Tesalonika', '1 Timotius', '2 Timotius', 'Titus', 'Filemon', 'Ibrani', 'Yakobus', '1 Petrus', '2 Petrus', '1 Yohanes', '2 Yohanes', '3 Yohanes', 'Yudas', 'Wahyu'];
@@ -188,17 +178,22 @@
                 tg.BackButton.show();
             } else if (viewName === 'detail') {
                 detailView.classList.add('active');
-                document.getElementById('detail-title').textContent = context.pericope.judul;
-                document.getElementById('detail-reference').textContent = `${context.bookName} ${context.pericope.pasal}:${context.pericope.ayat_awal}-${context.pericope.ayat_akhir}`;
-                renderPericopeDetail(context.pericope);
+                const pericope = context.pericope;
+                document.getElementById('detail-title').textContent = pericope.judul;
+                document.getElementById('detail-reference').textContent = `${pericope.kitab} ${pericope.pasal}:${pericope.ayat_awal}-${pericope.ayat_akhir}`;
+                renderPericopeDetail(pericope);
                 tg.BackButton.show();
             }
         }
 
         tg.onEvent('backButtonClicked', () => {
             if (currentView === 'detail') {
-                const bookName = document.getElementById('pericopes-title').textContent;
-                navigateToView('pericopes', { bookName });
+                const bookName = document.getElementById('pericopes-title').textContent || nextPericopeData?.kitab;
+                if(bookName) {
+                    navigateToView('pericopes', { bookName });
+                } else {
+                    navigateToView('journey');
+                }
             } else if (currentView === 'pericopes') {
                 navigateToView('journey');
             }
@@ -206,93 +201,99 @@
 
         // --- Fungsi Render ---
         function renderBibleJourney(progressData) {
+            // ... (logika render daftar kitab, tidak berubah)
             const container = document.getElementById('bible-journey-container');
             container.innerHTML = '';
             const booksWithProgress = allBibleBooks.map(bookName => ({ name: bookName, progress: progressData[bookName] || 0 }));
-            
             const createSection = (title, bookList) => {
                 let sectionHtml = `<div class="section-title">${title}</div><div class="book-list">`;
                 bookList.forEach(book => {
-                    sectionHtml += `
-                        <div class="book-item" data-book-name="${book.name}">
-                            <div class="book-info"><span class="book-name">${book.name}</span><span class="progress-text">${book.progress}%</span></div>
-                            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${book.progress}%;"></div></div>
-                        </div>`;
+                    sectionHtml += `<div class="book-item" data-book-name="${book.name}"><div class="book-info"><span class="book-name">${book.name}</span><span class="progress-text">${book.progress}%</span></div><div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${book.progress}%;"></div></div></div>`;
                 });
                 sectionHtml += `</div>`;
                 return sectionHtml;
             };
             container.innerHTML += createSection('Perjanjian Lama', booksWithProgress.slice(0, oldTestamentEndIndex + 1));
             container.innerHTML += createSection('Perjanjian Baru', booksWithProgress.slice(oldTestamentEndIndex + 1));
-
             document.querySelectorAll('.book-item').forEach(item => {
                 item.addEventListener('click', () => navigateToView('pericopes', { bookName: item.dataset.bookName }));
             });
         }
 
         function renderPericopesList(bookName, pericopes) {
+            // ... (logika render daftar perikop, tidak berubah)
             const container = document.getElementById('pericopes-list-container');
             container.innerHTML = '';
             let listHtml = '<div class="pericope-list">';
             pericopes.forEach(p => {
-                listHtml += `
-                    <div class="pericope-item" data-pericope-id="${p.id}">
-                        <span class="pericope-title">${p.judul}</span>
-                        <span class="pericope-reference">${bookName} ${p.pasal}:${p.ayat_awal}-${p.ayat_akhir}</span>
-                    </div>
-                `;
+                listHtml += `<div class="pericope-item" data-pericope-id="${p.id}"><span class="pericope-title">${p.judul}</span><span class="pericope-reference">${bookName} ${p.pasal}:${p.ayat_awal}-${p.ayat_akhir}</span></div>`;
             });
             listHtml += '</div>';
             container.innerHTML = listHtml;
-
             document.querySelectorAll('.pericope-item').forEach(item => {
                 item.addEventListener('click', () => {
                     const pericopeId = item.dataset.pericopeId;
                     const pericope = pericopesDataCache[bookName].find(p => p.id === pericopeId);
-                    navigateToView('detail', { bookName, pericope });
+                    navigateToView('detail', { pericope });
                 });
             });
         }
 
         function renderPericopeDetail(pericope) {
+            // ... (logika render detail perikop, tidak berubah)
             const container = document.getElementById('detail-content-container');
-            container.innerHTML = `
-                <h3>Makna Teologis</h3>
-                <p>${pericope.makna_teologis || 'Data tidak tersedia.'}</p>
-                <h3>Renungan Aplikatif</h3>
-                <p>${pericope.renungan_aplikatif || 'Data tidak tersedia.'}</p>
-            `;
+            container.innerHTML = `<h3>Makna Teologis</h3><p>${pericope.makna_teologis || 'Data tidak tersedia.'}</p><h3>Renungan Aplikatif</h3><p>${pericope.renungan_aplikatif || 'Data tidak tersedia.'}</p>`;
         }
 
         // --- Fungsi Fetch Data ---
         async function fetchBibleJourney() {
-            // ... (logika fetch progres utama, sama seperti sebelumnya)
-            // Untuk demo, kita gunakan data dummy
-            const dummyProgress = { "Kejadian": 100, "Keluaran": 75, "Matius": 50 };
-            renderBibleJourney(dummyProgress);
+            const container = document.getElementById('bible-journey-container');
+            try {
+                const response = await fetch(`${API_GET_JOURNEY_URL}?user_id=${user.id}`);
+                if (!response.ok) throw new Error(`Status: ${response.status}`);
+                const data = await response.json();
+
+                // Render progres utama
+                renderBibleJourney(data.progress);
+
+                // Cek dan siapkan tombol "Lanjutkan"
+                if (data.nextPericope) {
+                    nextPericopeData = data.nextPericope;
+                    continueButton.style.display = 'block';
+                } else {
+                    continueButton.style.display = 'none';
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error"><p>Gagal memuat progres.</p><small>${error.message}</small></div>`;
+            }
         }
 
         async function fetchPericopes(bookName) {
+            // ... (logika fetch perikop, tidak berubah)
             if (pericopesDataCache[bookName]) {
                 renderPericopesList(bookName, pericopesDataCache[bookName]);
                 return;
             }
-
             const container = document.getElementById('pericopes-list-container');
             container.innerHTML = '<div class="loading"><p>Memuat daftar perikop...</p></div>';
-
             try {
                 const response = await fetch(`${API_GET_PERICOPES_URL}?user_id=${user.id}&book_name=${encodeURIComponent(bookName)}`);
                 if (!response.ok) throw new Error(`Status: ${response.status}`);
                 const data = await response.json();
-                pericopesDataCache[bookName] = data.pericopes; // Simpan ke cache
-                renderPericopesList(bookName, data.pericopes);
+                pericopesDataCache[bookName] = data;
+                renderPericopesList(bookName, data);
             } catch (error) {
                 container.innerHTML = `<div class="error"><p>Gagal memuat perikop.</p><small>${error.message}</small></div>`;
             }
         }
 
-        // --- Inisialisasi ---
+        // --- Inisialisasi & Event Listeners ---
+        continueButton.addEventListener('click', () => {
+            if (nextPericopeData) {
+                navigateToView('detail', { pericope: nextPericopeData });
+            }
+        });
+
         window.addEventListener('load', () => {
             user = tg.initDataUnsafe.user;
             if (!user) {
