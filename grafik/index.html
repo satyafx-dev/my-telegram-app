@@ -152,7 +152,9 @@
             }
             
             chartTitle.textContent = title;
-
+            
+            // BARIS DEBUG: Tampilkan payload di console browser
+            console.log('Mengirim payload:', payload);
             try {
                 // Panggil webhook n8n menggunakan POST dengan body JSON
                 const response = await fetch(N8N_WEBHOOK_URL, {
