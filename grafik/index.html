@@ -168,31 +168,22 @@
                     throw new Error(`Gagal menghubungi server: ${response.status} ${response.statusText}`);
                 }
 
-                //const result = await response.json();
-
                 const result = await response.json();
-                console.log('Respons mentah dari n8n:', result); // <-- TAMBAHKAN BARIS INI
+                
+                // Baris debug untuk melihat respons mentah dari n8n
+                console.log('Respons mentah dari n8n:', result);
 
-                // ==========================================================
-                // REVISI DI SINI: Baca "result.url" bukan "result.chartUrl"
-                // ==========================================================
+                // Memeriksa apakah 'result' memiliki properti 'url' dan 'success'
                 if (result.success && result.url) {
                     chartImage.src = result.url;
                     chartContainer.classList.remove('hidden');
                 } else {
-                // ==========================================================
-                // REVISI DI SINI: Baca "result.url" bukan "result.chartUrl"
-                // ==========================================================
-                if (result.success && result.url) {
-                    chartImage.src = result.url;
-                    chartContainer.classList.remove('hidden');
-                } else {
-                    // Menangkap error yang dikirim dari dalam logic n8n
+                    // Menangkap error yang dikirim dari dalam logic n8n atau format tidak sesuai
                     throw new Error(result.error || 'Format respons dari server tidak sesuai.');
                 }
 
             } catch (error) {
-                // Menangkap error "Failed to fetch" (misal: CORS, network down) atau error yang kita buat di atas.
+                // Menangkap error "Failed to fetch", syntax error, atau error yang kita buat di atas.
                 displayError(error.message);
             } finally {
                 loadingIndicator.style.display = 'none';
