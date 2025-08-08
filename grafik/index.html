@@ -168,8 +168,18 @@
                     throw new Error(`Gagal menghubungi server: ${response.status} ${response.statusText}`);
                 }
 
+                //const result = await response.json();
+
                 const result = await response.json();
-                
+                console.log('Respons mentah dari n8n:', result); // <-- TAMBAHKAN BARIS INI
+
+                // ==========================================================
+                // REVISI DI SINI: Baca "result.url" bukan "result.chartUrl"
+                // ==========================================================
+                if (result.success && result.url) {
+                    chartImage.src = result.url;
+                    chartContainer.classList.remove('hidden');
+                } else {
                 // ==========================================================
                 // REVISI DI SINI: Baca "result.url" bukan "result.chartUrl"
                 // ==========================================================
