@@ -153,8 +153,6 @@
             
             chartTitle.textContent = title;
             
-            // BARIS DEBUG: Tampilkan payload di console browser
-            console.log('Mengirim payload:', payload);
             try {
                 // Panggil webhook n8n menggunakan POST dengan body JSON
                 const response = await fetch(N8N_WEBHOOK_URL, {
@@ -172,13 +170,15 @@
 
                 const result = await response.json();
                 
-                // Asumsikan n8n mengirimkan kembali { chartUrl: '...' }
-                if (result.chartUrl) {
-                    chartImage.src = result.chartUrl;
+                // ==========================================================
+                // REVISI DI SINI: Baca "result.url" bukan "result.chartUrl"
+                // ==========================================================
+                if (result.success && result.url) {
+                    chartImage.src = result.url;
                     chartContainer.classList.remove('hidden');
                 } else {
                     // Menangkap error yang dikirim dari dalam logic n8n
-                    throw new Error(result.message || 'Format respons dari server tidak sesuai.');
+                    throw new Error(result.error || 'Format respons dari server tidak sesuai.');
                 }
 
             } catch (error) {
