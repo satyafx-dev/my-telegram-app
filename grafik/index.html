@@ -7,83 +7,59 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-radius: 50%;
-            border-top: 4px solid #3498db;
-            width: 40px;
-            height: 40px;
-            animation: spin 2s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .loader { border: 4px solid #f3f3f3; border-radius: 50%; border-top: 4px solid #3498db; width: 40px; height: 40px; animation: spin 2s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="bg-gray-100">
 
     <div class="container mx-auto p-4 max-w-lg">
         <div class="bg-white rounded-xl shadow-md p-6">
-            
             <div id="header">
                 <h1 class="text-2xl font-bold text-gray-800">Grafik Kebutuhan Jemaat</h1>
                 <p class="text-gray-500 mt-1">Pilih periode untuk melihat visualisasi data.</p>
             </div>
-
             <div id="selectionView" class="mt-6">
                 <div class="space-y-3">
-                    <button onclick="generateChart('weekly')" class="w-full text-left p-4 bg-gray-50 hover:bg-blue-100 rounded-lg transition duration-200">
+                    <button onclick="generateChart('weekly')" class="w-full text-left p-4 bg-gray-50 hover:bg-blue-100 rounded-lg transition">
                         <h3 class="font-semibold text-gray-700">Mingguan</h3>
                         <p class="text-sm text-gray-500">Tampilkan data 7 hari terakhir.</p>
                     </button>
-                    <button onclick="generateChart('monthly')" class="w-full text-left p-4 bg-gray-50 hover:bg-blue-100 rounded-lg transition duration-200">
+                    <button onclick="generateChart('monthly')" class="w-full text-left p-4 bg-gray-50 hover:bg-blue-100 rounded-lg transition">
                         <h3 class="font-semibold text-gray-700">Bulanan</h3>
                         <p class="text-sm text-gray-500">Tampilkan data 30 hari terakhir.</p>
                     </button>
-                    
                     <div class="p-4 bg-gray-50 rounded-lg">
                         <h3 class="font-semibold text-gray-700">Custom</h3>
                         <p class="text-sm text-gray-500 mb-3">Pilih rentang tanggal sendiri.</p>
                         <div class="flex flex-col sm:flex-row gap-3">
                             <div class="w-full">
                                 <label for="startDate" class="text-xs font-medium text-gray-600">Tanggal Awal</label>
-                                <input type="date" id="startDate" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                <input type="date" id="startDate" class="w-full mt-1 p-2 border rounded-md">
                             </div>
                             <div class="w-full">
                                 <label for="endDate" class="text-xs font-medium text-gray-600">Tanggal Akhir</label>
-                                <input type="date" id="endDate" class="w-full mt-1 p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                <input type="date" id="endDate" class="w-full mt-1 p-2 border rounded-md">
                             </div>
                         </div>
-                        <button onclick="generateChart('custom')" class="w-full mt-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+                        <button onclick="generateChart('custom')" class="w-full mt-4 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 transition">
                             Tampilkan Grafik Custom
                         </button>
                     </div>
                 </div>
             </div>
-
             <div id="chartView" class="hidden mt-6 text-center">
                 <button onclick="showSelection()" class="mb-4 text-sm text-blue-600 hover:underline">&larr; Kembali ke Pilihan</button>
                 <h2 id="chartTitle" class="text-xl font-bold text-gray-800 mb-4"></h2>
-                <div id="loadingIndicator" class="flex justify-center items-center h-64">
-                    <div class="loader"></div>
-                </div>
-                <div id="chartContainer" class="hidden">
-                    <img id="chartImage" src="" alt="Grafik Kebutuhan Jemaat" class="w-full h-auto rounded-lg shadow-inner bg-gray-50">
-                </div>
-                <div id="errorContainer" class="hidden mt-4 p-4 bg-red-100 text-red-700 rounded-lg">
-                    <p id="errorMessage"></p>
-                </div>
+                <div id="loadingIndicator" class="flex justify-center items-center h-64"><div class="loader"></div></div>
+                <div id="chartContainer" class="hidden"><img id="chartImage" src="" alt="Grafik Kebutuhan Jemaat" class="w-full h-auto rounded-lg shadow-inner bg-gray-50"></div>
+                <div id="errorContainer" class="hidden mt-4 p-4 bg-red-100 text-red-700 rounded-lg"><p id="errorMessage"></p></div>
             </div>
-
         </div>
     </div>
 
     <script>
-        // --- UI ELEMENTS ---
         const selectionView = document.getElementById('selectionView');
         const chartView = document.getElementById('chartView');
         const chartTitle = document.getElementById('chartTitle');
@@ -95,8 +71,6 @@
         const startDateInput = document.getElementById('startDate');
         const endDateInput = document.getElementById('endDate');
 
-        // --- FUNCTIONS ---
-
         function showSelection() {
             chartView.classList.add('hidden');
             selectionView.classList.remove('hidden');
@@ -107,8 +81,6 @@
             selectionView.classList.add('hidden');
             chartView.classList.remove('hidden');
             document.getElementById('header').classList.add('hidden');
-            
-            // Reset state
             loadingIndicator.style.display = 'flex';
             chartContainer.classList.add('hidden');
             errorContainer.classList.add('hidden');
@@ -117,18 +89,12 @@
         
         async function generateChart(period) {
             showChartView();
-
-            // !!! PENTING: GANTI DENGAN URL PRODUKSI N8N ANDA !!!
             const N8N_WEBHOOK_URL = 'https://theos-automata.com/webhook/e399762b-44c0-47cc-8b08-333422d9d67f';
-
             let payload = {
                 range: period,
-                // !!! PENTING: GANTI DENGAN ID GEREJA YANG SESUAI !!!
                 id_gereja: 'c328dd53-ee3c-4081-99fa-7c9d2037ac51' 
             };
-            
             let title = '';
-
             if (period === 'weekly') {
                 title = 'Grafik Kebutuhan: Mingguan';
             } else if (period === 'monthly') {
@@ -136,7 +102,6 @@
             } else if (period === 'custom') {
                 const startDate = startDateInput.value;
                 const endDate = endDateInput.value;
-
                 if (!startDate || !endDate) {
                     displayError('Tanggal awal dan tanggal akhir harus diisi.');
                     return;
@@ -145,45 +110,28 @@
                     displayError('Tanggal awal tidak boleh lebih besar dari tanggal akhir.');
                     return;
                 }
-                
                 payload.startDate = startDate;
                 payload.endDate = endDate;
                 title = `Grafik Kebutuhan: ${startDate} s/d ${endDate}`;
             }
-            
             chartTitle.textContent = title;
-            
             try {
-                // Panggil webhook n8n menggunakan POST dengan body JSON
                 const response = await fetch(N8N_WEBHOOK_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)
                 });
-                
                 if (!response.ok) {
-                    // Menangkap error dari server seperti 404, 500, atau CORS
                     throw new Error(`Gagal menghubungi server: ${response.status} ${response.statusText}`);
                 }
-
                 const result = await response.json();
-                
-                // Baris debug untuk melihat respons mentah dari n8n
-                console.log('Respons mentah dari n8n:', result);
-
-                // Memeriksa apakah 'result' memiliki properti 'url' dan 'success'
                 if (result.success && result.url) {
                     chartImage.src = result.url;
                     chartContainer.classList.remove('hidden');
                 } else {
-                    // Menangkap error yang dikirim dari dalam logic n8n atau format tidak sesuai
                     throw new Error(result.error || 'Format respons dari server tidak sesuai.');
                 }
-
             } catch (error) {
-                // Menangkap error "Failed to fetch", syntax error, atau error yang kita buat di atas.
                 displayError(error.message);
             } finally {
                 loadingIndicator.style.display = 'none';
@@ -195,8 +143,6 @@
             errorContainer.classList.remove('hidden');
             loadingIndicator.style.display = 'none';
         }
-
     </script>
-
 </body>
 </html>
