@@ -10,17 +10,14 @@
         body {
             font-family: 'Inter', sans-serif;
         }
-        /* Custom styles for loading spinner */
         .loader {
             border: 4px solid #f3f3f3;
             border-radius: 50%;
             border-top: 4px solid #3498db;
             width: 40px;
             height: 40px;
-            -webkit-animation: spin 2s linear infinite; /* Safari */
             animation: spin 2s linear infinite;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -32,13 +29,11 @@
     <div class="container mx-auto p-4 max-w-lg">
         <div class="bg-white rounded-xl shadow-md p-6">
             
-            <!-- Header -->
             <div id="header">
                 <h1 class="text-2xl font-bold text-gray-800">Grafik Kebutuhan Jemaat</h1>
                 <p class="text-gray-500 mt-1">Pilih periode untuk melihat visualisasi data.</p>
             </div>
 
-            <!-- Selection View -->
             <div id="selectionView" class="mt-6">
                 <div class="space-y-3">
                     <button onclick="generateChart('weekly')" class="w-full text-left p-4 bg-gray-50 hover:bg-blue-100 rounded-lg transition duration-200">
@@ -50,7 +45,6 @@
                         <p class="text-sm text-gray-500">Tampilkan data 30 hari terakhir.</p>
                     </button>
                     
-                    <!-- Custom Date Range -->
                     <div class="p-4 bg-gray-50 rounded-lg">
                         <h3 class="font-semibold text-gray-700">Custom</h3>
                         <p class="text-sm text-gray-500 mb-3">Pilih rentang tanggal sendiri.</p>
@@ -71,7 +65,6 @@
                 </div>
             </div>
 
-            <!-- Chart View -->
             <div id="chartView" class="hidden mt-6 text-center">
                 <button onclick="showSelection()" class="mb-4 text-sm text-blue-600 hover:underline">&larr; Kembali ke Pilihan</button>
                 <h2 id="chartTitle" class="text-xl font-bold text-gray-800 mb-4"></h2>
@@ -90,10 +83,6 @@
     </div>
 
     <script>
-        // --- CONFIGURATION ---
-        // Ganti dengan URL Webhook n8n Anda
-        const N8N_WEBHOOK_URL = 'https://n8n.yourdomain.com/webhook/your-webhook-id';
-
         // --- UI ELEMENTS ---
         const selectionView = document.getElementById('selectionView');
         const chartView = document.getElementById('chartView');
@@ -125,11 +114,19 @@
             errorContainer.classList.add('hidden');
             chartImage.src = '';
         }
-
+        
         async function generateChart(period) {
             showChartView();
 
-            let url = `${N8N_WEBHOOK_URL}?period=${period}`;
+            // !!! PENTING: GANTI DENGAN URL PRODUKSI N8N ANDA !!!
+            const N8N_WEBHOOK_URL = 'https://theos-automata.com/webhook/e399762b-44c0-47cc-8b08-333422d9d67f';
+
+            let payload = {
+                range: period,
+                // !!! PENTING: GANTI DENGAN ID GEREJA YANG SESUAI !!!
+                id_gereja: 'isi-dengan-uuid-gereja-anda' 
+            };
+            
             let title = '';
 
             if (period === 'weekly') {
@@ -141,7 +138,7 @@
                 const endDate = endDateInput.value;
 
                 if (!startDate || !endDate) {
-                    displayError('Tanggal awal dan tanggal akhir harus diisi untuk periode custom.');
+                    displayError('Tanggal awal dan tanggal akhir harus diisi.');
                     return;
                 }
                 if (new Date(startDate) > new Date(endDate)) {
@@ -149,35 +146,43 @@
                     return;
                 }
                 
-                url += `&start=${startDate}&end=${endDate}`;
+                payload.startDate = startDate;
+                payload.endDate = endDate;
                 title = `Grafik Kebutuhan: ${startDate} s/d ${endDate}`;
             }
             
             chartTitle.textContent = title;
 
             try {
-                // Panggil webhook n8n
-                const response = await fetch(url);
+                // Panggil webhook n8n menggunakan POST dengan body JSON
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
                 
                 if (!response.ok) {
-                    throw new Error(`Terjadi masalah saat menghubungi server: ${response.statusText}`);
+                    // Menangkap error dari server seperti 404, 500, atau CORS
+                    throw new Error(`Gagal menghubungi server: ${response.status} ${response.statusText}`);
                 }
 
                 const result = await response.json();
-
-                if (result.success && result.chartUrl) {
-                    // Tampilkan grafik jika berhasil
+                
+                // Asumsikan n8n mengirimkan kembali { chartUrl: '...' }
+                if (result.chartUrl) {
                     chartImage.src = result.chartUrl;
                     chartContainer.classList.remove('hidden');
                 } else {
-                    // Tampilkan pesan error dari n8n
-                    throw new Error(result.error || 'Gagal membuat grafik. Format respons tidak sesuai.');
+                    // Menangkap error yang dikirim dari dalam logic n8n
+                    throw new Error(result.message || 'Format respons dari server tidak sesuai.');
                 }
 
             } catch (error) {
-                displayError(error.message || 'Tidak dapat mengambil data grafik. Periksa koneksi Anda atau hubungi admin.');
+                // Menangkap error "Failed to fetch" (misal: CORS, network down) atau error yang kita buat di atas.
+                displayError(error.message);
             } finally {
-                // Sembunyikan loading indicator
                 loadingIndicator.style.display = 'none';
             }
         }
