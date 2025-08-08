@@ -44,6 +44,8 @@
             border-radius: 12px;
             cursor: pointer;
             transition: transform 0.2s ease;
+            text-decoration: none; /* Menghapus garis bawah dari link */
+            color: inherit; /* Mewarisi warna teks dari parent */
         }
         .menu-item:active {
             transform: scale(0.97);
@@ -71,8 +73,8 @@
     </div>
 
     <div class="menu-grid">
-        <!-- Menu 1: Grafik Kebutuhan Jemaat -->
-        <div class="menu-item" id="menu-grafik">
+        <!-- Menu 1: Grafik Kebutuhan Jemaat (UPDATED) -->
+        <a href="./grafik/" class="menu-item" id="menu-grafik">
             <div class="icon">
                 <!-- Ikon Grafik -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M18.7 8a6 6 0 0 0-6 0"/><path d="M12.7 14a6 6 0 0 0-6 0"/><path d="M6.7 20a6 6 0 0 0-6 0"/></svg>
@@ -81,10 +83,10 @@
                 <h3>Grafik Kebutuhan Jemaat</h3>
                 <p>Lihat visualisasi data kebutuhan jemaat.</p>
             </div>
-        </div>
+        </a>
 
         <!-- Menu 2: Daftar Jemaat Gereja -->
-        <div class="menu-item" id="menu-jemaat">
+        <a href="./jemaat/" class="menu-item" id="menu-jemaat">
             <div class="icon">
                 <!-- Ikon Daftar Pengguna -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -93,10 +95,10 @@
                 <h3>Daftar Jemaat Gereja</h3>
                 <p>Kelola dan lihat daftar anggota jemaat.</p>
             </div>
-        </div>
+        </a>
 
         <!-- Menu 3: Topik Permasalahan -->
-        <div class="menu-item" id="menu-topik">
+        <a href="./topik/" class="menu-item" id="menu-topik">
             <div class="icon">
                 <!-- Ikon Topik/Pesan -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -105,7 +107,7 @@
                 <h3>Topik Permasalahan</h3>
                 <p>Analisis topik yang sedang dihadapi jemaat.</p>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- Script Telegram -->
@@ -122,29 +124,10 @@
         if (user && user.first_name) {
             welcomeText.textContent = `Halo, ${user.first_name}! Silakan pilih menu.`;
         }
-
-        // Fungsi untuk navigasi
-        function navigateTo(path) {
-            // Mengarahkan ke halaman Web App yang sesuai
-            window.location.href = path;
-        }
-
-        // Tambahkan event listener untuk setiap menu
-        document.getElementById('menu-grafik').addEventListener('click', () => {
-            // Nanti akan diarahkan ke folder /grafik
-            navigateTo('./grafik/'); 
-        });
-
-        document.getElementById('menu-jemaat').addEventListener('click', () => {
-            // Nanti akan diarahkan ke folder /jemaat
-            navigateTo('./jemaat/');
-        });
-
-        document.getElementById('menu-topik').addEventListener('click', () => {
-            // Nanti akan diarahkan ke folder /topik
-            navigateTo('./topik/');
-        });
-
+        
+        // Dengan tag <a>, JavaScript di bawah ini tidak lagi wajib untuk navigasi,
+        // tapi bisa dipertahankan jika Anda ingin menambahkan logika lain saat klik.
+        // Jika tidak ada logika tambahan, Anda bisa menghapus bagian addEventListener.
     </script>
 </body>
 </html>
