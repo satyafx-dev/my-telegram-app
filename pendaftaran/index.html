@@ -170,14 +170,33 @@
                 if (!response.ok) {
                     throw new Error(`Gagal mengambil data gereja. Status: ${response.status}`);
                 }
-                const churches = await response.json();
+                const raw = await response.json();
 
+                // Normalisasi: dukung array langsung, {data: [...]}, atau n8n items {json: {...}}
+                let churchesArray = [];
+                if (Array.isArray(raw)) {
+                  // Bisa array of plain objects atau array of {json:{...}}
+                  if (raw.length && raw[0] && raw[0].json) {
+                    churchesArray = raw.map(it => it.json);
+                  } else {
+                    churchesArray = raw;
+                  }
+                } else if (raw && Array.isArray(raw.data)) {
+                  churchesArray = raw.data;
+                } else {
+                  throw new Error("Format respons tidak valid untuk daftar gereja");
+                }
+
+// Render
                 churchSelect.innerHTML = '<option value="">-- Pilih Gereja --</option>';
-                churches.forEach(church => {
-                    const option = document.createElement('option');
-                    option.value = church.id;
-                    option.textContent = `${church.name}, ${church.city}`;
-                    churchSelect.appendChild(option);
+                churchesArray.forEach(church => {
+                  const id   = church.id;
+                  const name = church.name ?? church.church_name ?? church.church ?? "(tanpa nama)";
+                  const city = church.city ?? church.city_name ?? church.regency_name ?? church.kota ?? "";
+                  const option = document.createElement('option');
+                  option.value = id;
+                  option.textContent = city ? `${name}, ${city}` : name;
+                  churchSelect.appendChild(option);
                 });
 
                 churchSelect.disabled = false;
