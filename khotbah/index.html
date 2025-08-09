@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Susun Khotbah • Theos Dashboard</title>
+  <style>
+    :root{--bg:#f3f3f3;--text:#111;--muted:#6b7280;--card:#fff;--pri:#2481CC;--priText:#fff}
+    *{box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);padding:16px}
+    .wrap{max-width:860px;margin:0 auto}
+    h1{font-size:22px;margin:4px 0 12px}
+    .hint{color:var(--muted);margin:0 0 16px}
+    .card{background:var(--card);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input[type="text"], textarea, select{
+      width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;outline:none;font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+    .row{display:grid;gap:10px}
+    @media(min-width:720px){.row.two{grid-template-columns:1fr 1fr}}
+    .btnbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    button{background:var(--pri);color:var(--priText);border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+    .btn{background:#e5e7eb;color:#111}
+    .ghost{background:transparent;border:1px solid #e5e7eb;color:#111}
+    .ok{color:#10b981;font-weight:600}
+    .err{color:#ef4444;font-weight:600}
+    pre{white-space:pre-wrap;background:#fafafa;border:1px solid #eee;border-radius:10px;padding:12px;min-height:140px}
+    .small{font-size:12px;color:var(--muted)}
+    .spin{display:inline-block;width:16px;height:16px;border:2px solid #d1d5db;border-top-color:#111;border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Susun Khotbah</h1>
+  <p class="hint" id="hi">Masukkan minimal <b>Tema</b>. Kolom lain opsional. Klik “Susun Khotbah (AI)”.</p>
+
+  <div class="card">
+    <div class="row two">
+      <div>
+        <label for="tema">Tema <span class="small">(wajib)</span></label>
+        <input id="tema" type="text" placeholder="Mis. Hidup oleh Kasih Karunia" required />
+      </div>
+      <div>
+        <label for="judul">Judul (opsional)</label>
+        <input id="judul" type="text" placeholder="Mis. Dari Dosa ke Anugerah" />
+      </div>
+    </div>
+
+    <div class="row two">
+      <div>
+        <label for="ayat">Ayat Referensi (opsional)</label>
+        <input id="ayat" type="text" placeholder="Ef 2:8–10; Rm 5:1–2; Yoh 3:16" />
+      </div>
+      <div>
+        <label for="durasi">Perkiraan Durasi</label>
+        <select id="durasi">
+          <option value="10">10 menit (ringkas)</option>
+          <option value="20" selected>20 menit (sedang)</option>
+          <option value="30">30 menit (panjang)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label for="pendahuluan">Pendahuluan (opsional)</label>
+        <textarea id="pendahuluan" placeholder="Pengantar / konteks jemaat bila ada…"></textarea>
+      </div>
+      <div>
+        <label for="poin">Arah/Poin Khotbah (opsional)</label>
+        <textarea id="poin" placeholder="Tulis poin yang ingin ditekankan (mis. identitas di dalam Kristus, tidak di bawah hukum… )"></textarea>
+      </div>
+      <div>
+        <label for="aplikasi">Aplikasi (opsional)</label>
+        <textarea id="aplikasi" placeholder="Target aplikasi: pribadi, keluarga, marketplace, generasi muda, dsb."></textarea>
+      </div>
+      <div>
+        <label for="penutup">Penutup (opsional)</label>
+        <textarea id="penutup" placeholder="Nada ajakan, doa, altar call, dsb."></textarea>
+      </div>
+    </div>
+
+    <div class="btnbar">
+      <button id="btnAI">Susun Khotbah (AI)</button>
+      <button class="btn" id="btnPreview">Preview</button>
+      <button class="btn" id="btnCopy">Salin</button>
+      <button class="ghost" id="btnSendWebhook">Kirim ke Theos Dashboard</button>
+      <button class="ghost" id="btnSendChat">Kirim ke Chat Telegram</button>
+    </div>
+    <p id="status"></p>
+  </div>
+
+  <div class="card">
+    <label>Naskah Khotbah</label>
+    <pre id="preview"></pre>
+  </div>
+</div>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  const tg = window.Telegram?.WebApp; tg?.ready();
+  const user = tg?.initDataUnsafe?.user;
+  if(user?.first_name){ document.getElementById('hi').textContent = `Halo, ${user.first_name}. Masukkan minimal Tema, lalu klik “Susun Khotbah (AI)”.`; }
+
+  const el = id => document.getElementById(id);
+  const st = el('status'); const pv = el('preview');
+
+  function status(msg, type='ok'){
+    st.innerHTML = type==='ok' ? `<span class="ok">${msg}</span>` : `<span class="err">${msg}</span>`;
+    if(type==='ok') tg?.HapticFeedback?.notificationOccurred('success');
+    if(type!=='ok') tg?.HapticFeedback?.notificationOccurred('error');
+    setTimeout(()=>st.textContent='', 4500);
+  }
+
+  function getForm(){
+    return {
+      tema: el('tema').value.trim(),
+      judul: el('judul').value.trim(),
+      ayat: el('ayat').value.trim(),
+      durasi_menit: +el('durasi').value,
+      pendahuluan: el('pendahuluan').value.trim(),
+      poin: el('poin').value.trim(),
+      aplikasi: el('aplikasi').value.trim(),
+      penutup: el('penutup').value.trim(),
+    };
+  }
+
+  function composeFallback(){ // jika user ingin preview manual dulu
+    const f = getForm();
+    if(!f.tema) throw new Error('Tema wajib diisi.');
+    return `Judul: ${f.judul || f.tema}
+Tema: ${f.tema}
+Ayat Referensi: ${f.ayat || '-'}
+
+Pendahuluan:
+${f.pendahuluan || '-'}
+
+Isi:
+${f.poin || '-'}
+
+Aplikasi:
+${f.aplikasi || '-'}
+
+Penutup:
+${f.penutup || '-'}
+`;
+  }
+
+  // === AI Generate ===
+  async function generateAI(){
+    const f = getForm();
+    if(!f.tema){ status('Tema wajib diisi.', 'err'); return; }
+
+    const btn = el('btnAI');
+    const old = btn.innerHTML; btn.disabled = true;
+    btn.innerHTML = `<span class="spin"></span>Menyusun khotbah…`;
+
+    try{
+      const payload = {
+        type: 'sermon_generate',
+        user_id: user?.id || null,
+        username: user?.username || null,
+        first_name: user?.first_name || null,
+        faith_lens: 'kasih_karunia',
+        input: f
+      };
+
+      const res = await fetch('YOUR_N8N_AI_WEBHOOK_URL', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+
+      if(!res.ok) throw new Error('Webhook tidak merespons 2xx.');
+
+      const data = await res.json();
+      /* ekspektasi balikan:
+        {
+          title: "…",
+          references: ["Ef 2:8-10","Rm 5:1-2", ...],
+          intro: "…",
+          body: "…",            // isi (poin-poin/eksposisi)
+          application: "…",
+          conclusion: "…",
+          sermon_markdown: "…(opsional, jika mau format md/HTML)"
+        }
+      */
+
+      const naskah = data.sermon_markdown
+        || `Judul: ${data.title || f.judul || f.tema}
+Tema: ${f.tema}
+Ayat Referensi: ${(data.references && data.references.length)? data.references.join('; ') : (f.ayat || '-')}
+
+Pendahuluan:
+${data.intro || f.pendahuluan || '-'}
+
+Isi:
+${data.body || f.poin || '-'}
+
+Aplikasi:
+${data.application || f.aplikasi || '-'}
+
+Penutup:
+${data.conclusion || f.penutup || '-'}
+`;
+
+      pv.textContent = naskah;
+      status('Khotbah berhasil disusun ✔','ok');
+    }catch(e){
+      status('Gagal menyusun: '+e.message,'err');
+    }finally{
+      btn.disabled = false; btn.innerHTML = old;
+    }
+  }
+
+  // === Preview manual (tanpa AI) ===
+  el('btnPreview').addEventListener('click', ()=>{
+    try{ pv.textContent = composeFallback(); }
+    catch(e){ status(e.message,'err'); }
+  });
+
+  // === Copy ===
+  el('btnCopy').addEventListener('click', async ()=>{
+    try{
+      const text = pv.textContent || composeFallback();
+      await navigator.clipboard.writeText(text);
+      status('Naskah disalin ke clipboard.','ok');
+    }catch(e){ status('Gagal menyalin.','err'); }
+  });
+
+  // === Kirim ke Dashboard (n8n) ===
+  el('btnSendWebhook').addEventListener('click', async ()=>{
+    try{
+      const text = pv.textContent || composeFallback();
+      const res = await fetch('YOUR_N8N_AI_WEBHOOK_URL', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          type:'sermon_submit',
+          user_id: user?.id || null,
+          data:{ ...getForm(), naskah:text }
+        })
+      });
+      if(!res.ok) throw new Error('Webhook tidak merespons 2xx.');
+      status('Terkirim ke Theos Dashboard ✔','ok');
+    }catch(e){ status('Gagal kirim: '+e.message,'err'); }
+  });
+
+  // === Kirim ke chat Telegram (web_app_data) ===
+  el('btnSendChat').addEventListener('click', ()=>{
+    try{
+      const text = pv.textContent || composeFallback();
+      tg.sendData(JSON.stringify({
+        type:'sermon_preview',
+        user_id: user?.id || null,
+        naskah: text
+      }));
+      tg?.close(); // opsional
+    }catch(e){ status('Gagal kirim ke chat.','err'); }
+  });
+
+  // MainButton = jalur cepat AI
+  if(tg){
+    tg.MainButton.setText('Susun Khotbah (AI)');
+    tg.MainButton.onClick(()=>generateAI());
+    tg.MainButton.show();
+  }
+  el('btnAI').addEventListener('click', generateAI);
+</script>
+</body>
+</html>
