@@ -166,7 +166,7 @@ ${f.penutup || '-'}
         input: f
       };
 
-      const res = await fetch('YOUR_N8N_AI_WEBHOOK_URL', {
+      const res = await fetch('https://theos-automata.com/webhook/0c67ca7d-7b72-493b-bab2-2025ffc559cb', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify(payload)
@@ -233,7 +233,7 @@ ${data.conclusion || f.penutup || '-'}
   el('btnSendWebhook').addEventListener('click', async ()=>{
     try{
       const text = pv.textContent || composeFallback();
-      const res = await fetch('YOUR_N8N_AI_WEBHOOK_URL', {
+      const res = await fetch('https://theos-automata.com/webhook/0c67ca7d-7b72-493b-bab2-2025ffc559cb', {
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body: JSON.stringify({
