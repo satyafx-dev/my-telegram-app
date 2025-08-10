@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // GANTI DENGAN URL API BACKEND ANDA
-            const API_URL = `https://your-backend-api.com/progress?userId=${userId}`;
+            const API_URL = `https://dshbiniakqjjqksvywve.supabase.co/functions/v1/bible-progress/progress?userId=${userId}`;
 
             const response = await fetch(API_URL);
 
