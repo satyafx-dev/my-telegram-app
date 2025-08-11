@@ -92,6 +92,16 @@
         <p id="welcome-text">Halo! Mohon lengkapi data di bawah ini.</p>
 
         <div id="registration-form" style="display: none;">
+            
+            <div class="form-group">
+                <label for="audience-select">Target Renungan</label>
+                <select id="audience-select">
+                    <option value="umum" selected>Umum</option>
+                    <option value="anak-anak">Anak-Anak</option>
+                    <option value="remaja">Remaja</option>
+                    <option value="orang-tua">Orang Tua</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label for="language-select">Bahasa Utama</label>
                 <select id="language-select">
@@ -139,6 +149,7 @@
         const initialLoading = document.getElementById('initial-loading');
         const churchSelect = document.getElementById('church-select');
         const languageSelect = document.getElementById('language-select');
+        const audienceSelect = document.getElementById('audience-select'); // <-- PENAMBAHAN ELEMEN AUDIENS
         const mainButton = document.getElementById('main-button');
         const errorMessage = document.getElementById('error-message');
 
@@ -175,28 +186,28 @@
                 // Normalisasi: dukung array langsung, {data: [...]}, atau n8n items {json: {...}}
                 let churchesArray = [];
                 if (Array.isArray(raw)) {
-                  // Bisa array of plain objects atau array of {json:{...}}
-                  if (raw.length && raw[0] && raw[0].json) {
-                    churchesArray = raw.map(it => it.json);
-                  } else {
-                    churchesArray = raw;
-                  }
+                    // Bisa array of plain objects atau array of {json:{...}}
+                    if (raw.length && raw[0] && raw[0].json) {
+                      churchesArray = raw.map(it => it.json);
+                    } else {
+                      churchesArray = raw;
+                    }
                 } else if (raw && Array.isArray(raw.data)) {
-                  churchesArray = raw.data;
+                    churchesArray = raw.data;
                 } else {
-                  throw new Error("Format respons tidak valid untuk daftar gereja");
+                    throw new Error("Format respons tidak valid untuk daftar gereja");
                 }
 
-// Render
+                // Render
                 churchSelect.innerHTML = '<option value="">-- Pilih Gereja --</option>';
                 churchesArray.forEach(church => {
-                  const id   = church.id;
-                  const name = church.name ?? church.church_name ?? church.church ?? "(tanpa nama)";
-                  const city = church.city ?? church.city_name ?? church.regency_name ?? church.kota ?? "";
-                  const option = document.createElement('option');
-                  option.value = id;
-                  option.textContent = city ? `${name}, ${city}` : name;
-                  churchSelect.appendChild(option);
+                    const id   = church.id;
+                    const name = church.name ?? church.church_name ?? church.church ?? "(tanpa nama)";
+                    const city = church.city ?? church.city_name ?? church.regency_name ?? church.kota ?? "";
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = city ? `${name}, ${city}` : name;
+                    churchSelect.appendChild(option);
                 });
 
                 churchSelect.disabled = false;
@@ -218,6 +229,7 @@
 
             const selectedLanguage = languageSelect.value;
             const selectedChurchId = churchSelect.value;
+            const selectedAudience = audienceSelect.value; // <-- MENGAMBIL NILAI AUDIENS
 
             if (!selectedChurchId) {
                 tg.showAlert('Silakan pilih gereja Anda.');
@@ -233,6 +245,7 @@
                 user_id: user.id,
                 bahasa: selectedLanguage,
                 church_id: selectedChurchId,
+                audiens: selectedAudience, // <-- MENAMBAHKAN AUDIENS KE DATA YANG DIKIRIM
                 initData: tg.initData
             };
 
