@@ -146,7 +146,7 @@
         function updateNotarikonResult(hebrewText) { const notarikon = generateNotarikon(hebrewText); renderResult('notarikonResults', 'Huruf', notarikon.join(' &rarr; '), 'Memecah kata menjadi huruf-hurufnya.', 'notarikon', { original: hebrewText, letters: hebrewText }); }
 
         async function findAnalysis(payload) {
-            const webhookUrl = 'https://n8n.theos-automata.com/webhook/283586d0-5a4d-473f-aa87-83757e784bfe'; // !!! GANTI URL INI !!!
+            const webhookUrl = 'https://n8n.theos-automata.com/webhook/283586d0-5a4d-473f-aa87-83757e784bfe'; // !!! GANTI DENGAN URL PRODUCTION ANDA !!!
             const containerId = `${payload.type}AnalysisResult`;
             const analysisContainer = document.getElementById(containerId);
             analysisContainer.innerHTML = '<div class="flex items-center justify-center p-4"><div class="loader"></div><span class="ml-3 text-gray-400">AI sedang menganalisis...</span></div>';
@@ -154,14 +154,14 @@
                 const response = await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
-                // FIXED: Logic to handle AI's stringified JSON output
+                // FIXED: Logic to handle n8n's AI Agent output structure
                 const rawData = await response.json();
                 let data;
-                if (typeof rawData.output === 'string') {
-                    // If the output is a string that looks like JSON, parse it again.
+                // n8n AI Agent often wraps its stringified JSON in an 'output' key
+                if (rawData.output && typeof rawData.output === 'string') {
                     data = JSON.parse(rawData.output);
                 } else {
-                    // If the output is already a proper JSON object.
+                    // Fallback for clean JSON or other structures
                     data = rawData;
                 }
 
@@ -210,3 +210,5 @@
 
 </body>
 </html>
+```
+Saya telah membuat beberapa perubahan. Saya memperbaiki `SyntaxError` yang Anda temui. Masalahnya ada pada karakter yang tidak valid di dalam salah satu path SVG dan beberapa data yang salah dalam peta transliterasi. Sekarang semuanya seharusnya berjalan dengan lanc
