@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Hermeneutika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* bg-gray-900 */
+        }
+        .card {
+            background-color: #1F2937; /* bg-gray-800 */
+            border: 1px solid #374151; /* border-gray-700 */
+        }
+        .input-field {
+            background-color: #374151; /* bg-gray-700 */
+            border: 1px solid #4B5563; /* border-gray-600 */
+            color: #F9FAFB; /* text-gray-50 */
+        }
+        .result-item {
+            background-color: #374151; /* bg-gray-700 */
+            border-bottom: 1px solid #4B5563; /* border-gray-600 */
+        }
+        .result-item:last-child {
+            border-bottom: none;
+        }
+        .accordion-button {
+            background-color: #374151; /* bg-gray-700 */
+            transition: background-color 0.2s;
+        }
+        .accordion-button:hover {
+            background-color: #4B5563; /* bg-gray-600 */
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #111827;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="text-gray-200 p-4 sm:p-6 md:p-8">
+
+    <div class="max-w-3xl mx-auto">
+        <header class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-amber-400">Kalkulator Hermeneutika</h1>
+            <p class="text-gray-400 mt-2">Alat bantu untuk studi Gematria, Isopsephy, dan lainnya.</p>
+        </header>
+
+        <main class="card rounded-xl shadow-lg p-4 sm:p-6">
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input type="text" id="mainInput" class="input-field w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 text-lg" placeholder="Masukkan kata (Ibrani/Yunani)..." dir="auto">
+                <button id="clearButton" class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">Bersihkan</button>
+            </div>
+            <p id="detectedLang" class="text-sm text-gray-500 mt-2 h-5"></p>
+
+            <!-- HASIL PERHITUNGAN -->
+            <div id="results" class="mt-6 space-y-3">
+                <!-- Gematria Section -->
+                <div class="accordion-item">
+                    <button class="accordion-button w-full text-left p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-semibold text-lg text-amber-500">Gematria (Ibrani)</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="accordion-content bg-gray-900/50 rounded-b-lg">
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <label for="gematriaMethod" class="block text-sm font-medium text-gray-400 mb-2">Pilih Metode Gematria:</label>
+                                <select id="gematriaMethod" class="input-field w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400">
+                                    <option value="hechrechi">Mispar Hechrechi</option>
+                                    <option value="siduri">Mispar Siduri</option>
+                                    <option value="katan">Mispar Katan</option>
+                                    <option value="katanMispari">Mispar Katan Mispari</option>
+                                    <option value="gadol">Mispar Gadol</option>
+                                    <option value="milui">Milui (Isian)</option>
+                                </select>
+                            </div>
+                            <div id="gematriaSingleResult" class="min-h-[70px]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Isopsephy Section -->
+                <div class="accordion-item">
+                    <button class="accordion-button w-full text-left p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-semibold text-lg text-sky-400">Isopsephy (Yunani)</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="accordion-content bg-gray-900/50 rounded-b-lg">
+                        <div id="isopsephyResults" class="p-4 space-y-2"></div>
+                    </div>
+                </div>
+
+                <!-- Ciphers Section -->
+                <div class="accordion-item">
+                    <button class="accordion-button w-full text-left p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-semibold text-lg text-emerald-400">Cipher & Transformasi</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="accordion-content bg-gray-900/50 rounded-b-lg">
+                        <!-- MODIFIED: Cipher Combo Box -->
+                        <div class="p-4 space-y-4">
+                            <div>
+                                <label for="cipherMethod" class="block text-sm font-medium text-gray-400 mb-2">Pilih Metode Cipher:</label>
+                                <select id="cipherMethod" class="input-field w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                                    <option value="atbash">Atbash</option>
+                                    <option value="albam">Albam</option>
+                                    <option value="atbah">Atbah</option>
+                                    <option value="achbi">Achbi</option>
+                                    <option value="avgad">Avgad</option>
+                                </select>
+                            </div>
+                            <div id="cipherSingleResult" class="min-h-[70px]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notarikon Section -->
+                <div class="accordion-item">
+                    <button class="accordion-button w-full text-left p-4 rounded-lg flex justify-between items-center">
+                        <span class="font-semibold text-lg text-fuchsia-400">Notarikon</span>
+                        <svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div class="accordion-content bg-gray-900/50 rounded-b-lg">
+                        <div id="notarikonResults" class="p-4 space-y-2"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // --- DATABASE KARAKTER ---
+        const hebrewChars = {
+            'א': { val: 1, ord: 1, name: 'Aleph', milui: 111 }, 'ב': { val: 2, ord: 2, name: 'Bet', milui: 412 }, 'ג': { val: 3, ord: 3, name: 'Gimel', milui: 83 },
+            'ד': { val: 4, ord: 4, name: 'Dalet', milui: 434 }, 'ה': { val: 5, ord: 5, name: 'He', milui: 15 }, 'ו': { val: 6, ord: 6, name: 'Vav', milui: 22 },
+            'ז': { val: 7, ord: 7, name: 'Zayin', milui: 77 }, 'ח': { val: 8, ord: 8, name: 'Het', milui: 418 }, 'ט': { val: 9, ord: 9, name: 'Tet', milui: 419 },
+            'י': { val: 10, ord: 10, name: 'Yud', milui: 20 }, 'כ': { val: 20, ord: 11, name: 'Kaf', milui: 100 }, 'ך': { val: 20, ord: 11, sofit: 500, name: 'Kaf Sofit', milui: 100 },
+            'ל': { val: 30, ord: 12, name: 'Lamed', milui: 74 }, 'מ': { val: 40, ord: 13, name: 'Mem', milui: 80 }, 'ם': { val: 40, ord: 13, sofit: 600, name: 'Mem Sofit', milui: 80 },
+            'נ': { val: 50, ord: 14, name: 'Nun', milui: 106 }, 'ן': { val: 50, ord: 14, sofit: 700, name: 'Nun Sofit', milui: 106 }, 'ס': { val: 60, ord: 15, name: 'Samekh', milui: 120 },
+            'ע': { val: 70, ord: 16, name: 'Ayin', milui: 130 }, 'פ': { val: 80, ord: 17, name: 'Pe', milui: 81 }, 'ף': { val: 80, ord: 17, sofit: 800, name: 'Pe Sofit', milui: 81 },
+            'צ': { val: 90, ord: 18, name: 'Tzadi', milui: 104 }, 'ץ': { val: 90, ord: 18, sofit: 900, name: 'Tzadi Sofit', milui: 104 }, 'ק': { val: 100, ord: 19, name: 'Kuf', milui: 186 },
+            'ר': { val: 200, ord: 20, name: 'Resh', milui: 510 }, 'ש': { val: 300, ord: 21, name: 'Shin', milui: 360 }, 'ת': { val: 400, ord: 22, name: 'Tav', milui: 406 }
+        };
+
+        const greekChars = {
+            'α': 1, 'β': 2, 'γ': 3, 'δ': 4, 'ε': 5, 'ϝ': 6, 'ζ': 7, 'η': 8, 'θ': 9, 'ι': 10, 'κ': 20, 'λ': 30, 'μ': 40, 'ν': 50, 'ξ': 60, 'ο': 70, 'π': 80, 'ϟ': 90, 'ρ': 100, 'σ': 200, 'ς': 200, 'τ': 300, 'υ': 400, 'φ': 500, 'χ': 600, 'ψ': 700, 'ω': 800, 'ϡ': 900
+        };
+
+        // --- FUNGSI KALKULASI ---
+
+        function cleanInput(text) {
+            return text.replace(/[\s.,\/#!$%\^&\*;:{}=\-_`~()0-9]/g, "");
+        }
+
+        function detectLanguage(text) {
+            for (const char of text) {
+                if (hebrewChars[char]) return 'Ibrani';
+                if (greekChars[char.toLowerCase()]) return 'Yunani';
+            }
+            return 'Latin/Tidak Dikenali';
+        }
+
+        function calculateGematria(text) {
+            const cleaned = cleanInput(text);
+            let hechrechi = 0, siduri = 0, katan = 0, gadol = 0, milui = 0;
+
+            for (const char of cleaned) {
+                const data = hebrewChars[char];
+                if (data) {
+                    hechrechi += data.val;
+                    siduri += data.ord;
+                    katan += parseInt(data.val.toString()[0]);
+                    gadol += data.sofit || data.val;
+                    milui += data.milui;
+                }
+            }
+            
+            let katanMispari = hechrechi;
+            while(katanMispari > 9) {
+                katanMispari = katanMispari.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+            }
+            
+            return { hechrechi, siduri, katan, katanMispari, gadol, milui };
+        }
+
+        function calculateIsopsephy(text) {
+            const cleaned = cleanInput(text.toLowerCase());
+            let total = 0;
+            for (const char of cleaned) {
+                if (greekChars[char]) {
+                    total += greekChars[char];
+                }
+            }
+            return total;
+        }
+
+        function transformCipher(text, type) {
+            const hebrewNormal = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ', 'ק', 'ר', 'ש', 'ת'];
+            const cipherMap = {
+                atbash: {'א':'ת','ב':'ש','ג':'ר','ד':'ק','ה':'צ','ו':'פ','ז':'ע','ח':'ס','ט':'נ','י':'מ','כ':'ל','ל':'כ','מ':'י','נ':'ט','ס':'ח','ע':'ז','פ':'ו','צ':'ה','ק':'ד','ר':'ג','ש':'ב','ת':'א'},
+                albam: {'א':'ל','ב':'מ','ג':'נ','ד':'ס','ה':'ע','ו':'פ','ז':'צ','ח':'ק','ט':'ר','י':'ש','כ':'ת','ל':'א','מ':'ב','נ':'ג','ס':'ד','ע':'ה','פ':'ו','צ':'ז','ק':'ח','ר':'ט','ש':'י','ת':'כ'},
+                atbah: {'א':'ט','ב':'ח','ג':'ז','ד':'ו','ה':'ה','ו':'ד','ז':'ג','ח':'ב','ט':'א','י':'צ','כ':'פ','ל':'ע','מ':'ס','נ':'נ','ס':'מ','ע':'ל','פ':'כ','צ':'י','ק':'ת','ר':'ש','ש':'ר','ת':'ק'},
+                achbi: {'א':'כ','ב':'ל','ג':'מ','ד':'נ','ה':'ס','ו':'ע','ז':'פ','ח':'צ','ט':'ק','י':'ר','כ':'א','ל':'ב','מ':'ג','נ':'ד','ס':'ה','ע':'ו','פ':'ז','צ':'ח','ק':'ט','ר':'י','ש':'ת','ת':'ש'},
+            };
+
+            let result = '';
+            for (const char of text) {
+                let transformedChar = char;
+                if (type === 'avgad') {
+                    const index = hebrewNormal.indexOf(char);
+                    if (index !== -1) {
+                        transformedChar = hebrewNormal[(index + 1) % hebrewNormal.length];
+                    }
+                } else if (cipherMap[type] && cipherMap[type][char]) {
+                    transformedChar = cipherMap[type][char];
+                }
+                result += transformedChar;
+            }
+            return result;
+        }
+        
+        function generateNotarikon(text) {
+            const cleaned = cleanInput(text);
+            return cleaned.split('').map(char => {
+                const data = hebrewChars[char];
+                return data ? `${char} (${data.name})` : char;
+            });
+        }
+
+        // --- RENDER HASIL ---
+        function renderResult(containerId, label, value, tooltipText = '') {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; // Clear previous content
+            let tooltipHtml = '';
+            if (tooltipText) {
+                tooltipHtml = `
+                    <div class="tooltip ml-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                        <span class="tooltiptext">${tooltipText}</span>
+                    </div>
+                `;
+            }
+
+            const resultHtml = `
+                <div class="result-item flex justify-between items-center p-3 rounded-md">
+                    <div class="flex items-center">
+                        <span class="font-medium text-gray-300">${label}</span>
+                        ${tooltipHtml}
+                    </div>
+                    <div class="flex items-center">
+                        <span class="text-lg font-semibold text-amber-300 mr-4" dir="auto">${value}</span>
+                        <button class="copy-btn p-1.5 rounded-md hover:bg-gray-600" data-copy="${value}">
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = resultHtml;
+        }
+        
+        // --- DYNAMIC UPDATE FUNCTIONS ---
+        function updateGematriaResult() {
+            const text = mainInput.value;
+            const lang = detectLanguage(text);
+            const container = document.getElementById('gematriaSingleResult');
+
+            if (lang !== 'Ibrani' || text.trim() === '') {
+                container.innerHTML = ''; return;
+            }
+
+            const method = document.getElementById('gematriaMethod').value;
+            const allValues = calculateGematria(text);
+            const methodMap = {
+                hechrechi: { label: 'Mispar Hechrechi', value: allValues.hechrechi, tip: 'Nilai standar/absolut.' },
+                siduri: { label: 'Mispar Siduri', value: allValues.siduri, tip: 'Nilai berdasarkan urutan alfabet (1-22).' },
+                katan: { label: 'Mispar Katan', value: allValues.katan, tip: 'Setiap huruf direduksi jadi 1 digit (nol dihilangkan).' },
+                katanMispari: { label: 'Mispar Katan Mispari', value: allValues.katanMispari, tip: 'Total nilai standar direduksi jadi 1 digit.' },
+                gadol: { label: 'Mispar Gadol', value: allValues.gadol, tip: 'Memperhitungkan nilai khusus huruf akhir (sofit).' },
+                milui: { label: 'Milui (Isian)', value: allValues.milui, tip: 'Nilai dari pengejaan penuh nama setiap huruf.' }
+            };
+
+            const selected = methodMap[method];
+            if (selected) renderResult('gematriaSingleResult', selected.label, selected.value, selected.tip);
+        }
+
+        function updateCipherResult() {
+            const text = mainInput.value;
+            const lang = detectLanguage(text);
+            const container = document.getElementById('cipherSingleResult');
+
+            if (lang !== 'Ibrani' || text.trim() === '') {
+                container.innerHTML = ''; return;
+            }
+
+            const method = document.getElementById('cipherMethod').value;
+            const transformedText = transformCipher(text, method);
+            const methodMap = {
+                atbash: { label: 'Atbash', tip: 'Huruf pertama ditukar dengan terakhir (A↔Z).' },
+                albam: { label: 'Albam', tip: 'Paruh pertama alfabet ditukar dengan paruh kedua (A↔L).' },
+                atbah: { label: 'Atbah', tip: 'Sistem substitusi spesifik (A↔T, B↔H, dst).' },
+                achbi: { label: 'Achbi', tip: 'Sistem substitusi spesifik lainnya (A↔K, B↔L, dst).' },
+                avgad: { label: 'Avgad', tip: 'Mengganti huruf dengan huruf berikutnya (A→B).' }
+            };
+
+            const selected = methodMap[method];
+            if (selected) renderResult('cipherSingleResult', selected.label, transformedText, selected.tip);
+        }
+
+        // --- EVENT HANDLERS ---
+        const mainInput = document.getElementById('mainInput');
+        const detectedLangEl = document.getElementById('detectedLang');
+        const gematriaMethodSelect = document.getElementById('gematriaMethod');
+        const cipherMethodSelect = document.getElementById('cipherMethod');
+
+        mainInput.addEventListener('input', () => {
+            const text = mainInput.value;
+            const lang = detectLanguage(text);
+            detectedLangEl.textContent = `Bahasa terdeteksi: ${lang}`;
+
+            // Clear static result areas
+            document.getElementById('isopsephyResults').innerHTML = '';
+            document.getElementById('notarikonResults').innerHTML = '';
+
+            // Trigger dynamic updates
+            updateGematriaResult();
+            updateCipherResult();
+
+            if (text.trim() === '') {
+                detectedLangEl.textContent = ''; return;
+            }
+
+            // Isopsephy (static result)
+            if (lang === 'Yunani') {
+                const isopsephy = calculateIsopsephy(text);
+                renderResult('isopsephyResults', 'Nilai Isopsephy', isopsephy, 'Nilai numerik standar untuk alfabet Yunani.');
+            }
+
+            // Notarikon (static result)
+            if (lang === 'Ibrani') {
+                 const notarikon = generateNotarikon(text);
+                 renderResult('notarikonResults', 'Huruf', notarikon.join(' &rarr; '), 'Memecah kata menjadi huruf-hurufnya sebagai dasar akronim.');
+            }
+        });
+        
+        gematriaMethodSelect.addEventListener('change', updateGematriaResult);
+        cipherMethodSelect.addEventListener('change', updateCipherResult);
+
+        document.getElementById('clearButton').addEventListener('click', () => {
+            mainInput.value = '';
+            mainInput.dispatchEvent(new Event('input'));
+        });
+        
+        document.querySelectorAll('.accordion-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector('svg');
+                
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    icon.style.transform = 'rotate(180deg)';
+                }
+            });
+        });
+
+        document.getElementById('results').addEventListener('click', function(e) {
+            const button = e.target.closest('.copy-btn');
+            if (button) {
+                const textToCopy = button.dataset.copy;
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const originalIcon = button.innerHTML;
+                    button.innerHTML = '<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>';
+                    setTimeout(() => { button.innerHTML = originalIcon; }, 1500);
+                } catch (err) { console.error('Gagal menyalin teks: ', err); }
+                document.body.removeChild(textArea);
+            }
+        });
+    </script>
+
+</body>
+</html>
