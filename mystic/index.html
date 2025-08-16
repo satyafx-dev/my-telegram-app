@@ -32,10 +32,10 @@
 
         <main class="card rounded-xl shadow-lg p-4 sm:p-6">
             <div class="flex items-center gap-2">
-                <input type="text" id="mainInput" class="input-field w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 text-lg" placeholder="Ketik (sheol, aletheia)..." dir="auto">
+                <input type="text" id="mainInput" class="input-field w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 text-lg" placeholder="Ketik (elohim, yeshua, aletheia)..." dir="auto">
                 <div class="tooltip">
-                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
-                    <span class="tooltiptext"><b>Panduan Transliterasi:</b><br><b>Ibrani:</b> sh→ש, tz→צ, ch→ח, '→ע<br><b>Yunani:</b> th→θ, ph→φ, ch→χ, ps→ψ<br>Contoh: <b>mashiach</b>, <b>logos</b></span>
+                    <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 o 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                    <span class="tooltiptext"><b>Panduan Penulisan:</b><br>Ketik istilah Ibrani atau Yunani dalam huruf Latin. Aplikasi akan menggunakan kamus internal untuk akurasi.<br>Contoh: <b>elohim, yahweh, aletheia</b></span>
                 </div>
                 <button id="clearButton" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">Bersihkan</button>
             </div>
@@ -82,8 +82,32 @@
     <script>
         // --- DATABASE & CONFIG ---
         const hebrewChars = { 'א': { val: 1, ord: 1, name: 'Aleph', milui: 111 }, 'ב': { val: 2, ord: 2, name: 'Bet', milui: 412 }, 'ג': { val: 3, ord: 3, name: 'Gimel', milui: 83 }, 'ד': { val: 4, ord: 4, name: 'Dalet', milui: 434 }, 'ה': { val: 5, ord: 5, name: 'He', milui: 15 }, 'ו': { val: 6, ord: 6, name: 'Vav', milui: 22 }, 'ז': { val: 7, ord: 7, name: 'Zayin', milui: 77 }, 'ח': { val: 8, ord: 8, name: 'Het', milui: 418 }, 'ט': { val: 9, ord: 9, name: 'Tet', milui: 419 }, 'י': { val: 10, ord: 10, name: 'Yud', milui: 20 }, 'כ': { val: 20, ord: 11, name: 'Kaf', milui: 100 }, 'ך': { val: 20, ord: 11, sofit: 500, name: 'Kaf Sofit', milui: 100 }, 'ל': { val: 30, ord: 12, name: 'Lamed', milui: 74 }, 'מ': { val: 40, ord: 13, name: 'Mem', milui: 80 }, 'ם': { val: 40, ord: 13, sofit: 600, name: 'Mem Sofit', milui: 80 }, 'נ': { val: 50, ord: 14, name: 'Nun', milui: 106 }, 'ן': { val: 50, ord: 14, sofit: 700, name: 'Nun Sofit', milui: 106 }, 'ס': { val: 60, ord: 15, name: 'Samekh', milui: 120 }, 'ע': { val: 70, ord: 16, name: 'Ayin', milui: 130 }, 'פ': { val: 80, ord: 17, name: 'Pe', milui: 81 }, 'ף': { val: 80, ord: 17, sofit: 800, name: 'Pe Sofit', milui: 81 }, 'צ': { val: 90, ord: 18, name: 'Tzadi', milui: 104 }, 'ץ': { val: 90, ord: 18, sofit: 900, name: 'Tzadi Sofit', milui: 104 }, 'ק': { val: 100, ord: 19, name: 'Kuf', milui: 186 }, 'ר': { val: 200, ord: 20, name: 'Resh', milui: 510 }, 'ש': { val: 300, ord: 21, name: 'Shin', milui: 360 }, 'ת': { val: 400, ord: 22, name: 'Tav', milui: 406 } };
-        const greekChars = { 'α': 1, 'β': 2, 'γ': 3, 'δ': 4, 'ε': 5, 'ϝ': 6, 'ζ': 7, 'η': 8, 'θ': 9, 'ι': 10, 'κ': 20, 'λ': 30, 'μ': 40, 'ν': 50, 'ξ': 60, 'ο': 70, 'π': 80, 'ϟ': 90, 'ρ': 100, 'σ': 200, 'ς': 200, 'τ': 300, 'υ': 400, 'φ': 500, 'χ': 600, 'ψ': 700, 'ω': 800, 'ϡ': 900 };
-        const translitHebrewMap = { 'tz': 'צ', 'ts': 'צ', 'ch': 'ח', 'kh': 'כ', 'sh': 'ש', 'a': 'א', 'b': 'ב', 'g': 'γ', 'd': 'δ', 'h': 'ה', 'v': 'ו', 'w': 'ו', 'u': 'ו', 'o': 'ו', 'z': 'ז', 't': 'ט', 'y': 'י', 'i': 'י', 'e': 'י', 'k': 'ק', 'l': 'ל', 'm': 'מ', 'n': 'נ', 's': 'ס', "'": 'ע', 'p': 'פ', 'f': 'פ', 'q': 'ק', 'r': 'ר', 'th': 'ת' };
+        const greekChars = { 'α': 1, 'β': 2, 'γ': 3, 'δ': 4, 'ε': 5, 'ζ': 7, 'η': 8, 'θ': 9, 'ι': 10, 'κ': 20, 'λ': 30, 'μ': 40, 'ν': 50, 'ξ': 60, 'ο': 70, 'π': 80, 'ρ': 100, 'σ': 200, 'ς': 200, 'τ': 300, 'υ': 400, 'φ': 500, 'χ': 600, 'ψ': 700, 'ω': 800 };
+        
+        // NEW: Theological Dictionary for Accuracy
+        const theologicalDictionary = {
+            'elohim': { hebrew: 'אלהים', greek: 'θεος' },
+            'yahweh': { hebrew: 'יהוה' },
+            'yhwh': { hebrew: 'יהוה' },
+            'adonai': { hebrew: 'אדני' },
+            'yeshua': { hebrew: 'ישוע', greek: 'ιησους' },
+            'jesus': { hebrew: 'ישוע', greek: 'ιησους' },
+            'mashiach': { hebrew: 'משיח', greek: 'χριστος' },
+            'messiah': { hebrew: 'משיח', greek: 'χριστος' },
+            'christ': { hebrew: 'משיח', greek: 'χριστος' },
+            'ruach': { hebrew: 'רוח', greek: 'πνευμα' },
+            'sheol': { hebrew: 'שאול', greek: 'αδης' },
+            'torah': { hebrew: 'תורה', greek: 'νομος' },
+            'amen': { hebrew: 'אמן', greek: 'αμην' },
+            'shalom': { hebrew: 'שלום', greek: 'ειρηνη' },
+            'aletheia': { greek: 'αληθεια' },
+            'logos': { greek: 'λογος' },
+            'agape': { greek: 'αγαπη' },
+            'pneuma': { greek: 'πνευμα' },
+            'hades': { greek: 'αδης' },
+        };
+
+        const translitHebrewMap = { 'tz': 'צ', 'ts': 'צ', 'ch': 'ח', 'kh': 'כ', 'sh': 'ש', 'a': 'א', 'b': 'ב', 'g': 'ג', 'd': 'ד', 'h': 'ה', 'v': 'ו', 'w': 'ו', 'u': 'ו', 'o': 'ו', 'z': 'ז', 't': 'ט', 'y': 'י', 'i': 'י', 'e': 'י', 'k': 'ק', 'l': 'ל', 'm': 'מ', 'n': 'נ', 's': 'ס', "'": 'ע', 'p': 'פ', 'f': 'פ', 'q': 'ק', 'r': 'ר', 'th': 'ת' };
         const translitGreekMap = { 'th': 'θ', 'ph': 'φ', 'ch': 'χ', 'ps': 'ψ', 'a': 'α', 'b': 'β', 'g': 'γ', 'd': 'δ', 'e': 'ε', 'z': 'ζ', 'ē': 'η', 'i': 'ι', 'k': 'κ', 'l': 'λ', 'm': 'μ', 'n': 'ν', 'x': 'ξ', 'o': 'ο', 'p': 'π', 'r': 'ρ', 's': 'σ', 't': 'τ', 'u': 'υ', 'y': 'υ', 'ō': 'ω' };
 
         // --- FUNGSI KALKULASI & UTILITAS ---
@@ -91,7 +115,7 @@
         function detectLanguage(text) { for (const char of text) { if (hebrewChars[char]) return 'Ibrani'; if (greekChars[char.toLowerCase()]) return 'Yunani'; } return 'Latin'; }
         function transliterate(text, map) { let latinText = text.toLowerCase(); let resultText = ''; let i = 0; while (i < latinText.length) { let found = false; if (i + 1 < latinText.length) { let twoChar = latinText.substring(i, i + 2); if (map[twoChar]) { resultText += map[twoChar]; i += 2; found = true; } } if (!found) { let oneChar = latinText.substring(i, i + 1); if (map[oneChar]) { resultText += map[oneChar]; } i += 1; } } return resultText; }
         function calculateGematria(text) { const cleaned = cleanInput(text); let hechrechi = 0, siduri = 0, katan = 0, gadol = 0, milui = 0; for (const char of cleaned) { const data = hebrewChars[char]; if (data) { hechrechi += data.val; siduri += data.ord; katan += parseInt(data.val.toString()[0]); gadol += data.sofit || data.val; milui += data.milui; } } let katanMispari = hechrechi; while(katanMispari > 9) { katanMispari = katanMispari.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0); } return { hechrechi, siduri, katan, katanMispari, gadol, milui }; }
-        function calculateIsopsephy(text) { let cleaned = cleanInput(text.toLowerCase()); let finalWord = ''; let total = 0; for (const char of cleaned) { if (greekChars[char]) { total += greekChars[char]; finalWord += char; } } if (cleaned.endsWith('s')) { finalWord += 'ς'; } else { finalWord = finalWord.slice(0, -1) + 'σ'; } return total; }
+        function calculateIsopsephy(text) { let total = 0; let finalWord = ''; const cleaned = cleanInput(text.toLowerCase()); for (let i = 0; i < cleaned.length; i++) { const char = cleaned[i]; if (greekChars[char]) { if (char === 'σ' && i === cleaned.length - 1) { finalWord += 'ς'; total += greekChars['ς']; } else { finalWord += char; total += greekChars[char]; } } } return total; }
         function transformCipher(text, type) { const hebrewNormal = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ', 'ק', 'ר', 'ש', 'ת']; const cipherMap = { atbash: {'א':'ת','ב':'ש','ג':'ר','ד':'ק','ה':'צ','ו':'פ','ז':'ע','ח':'ס','ט':'נ','י':'מ','כ':'ל','ל':'כ','מ':'י','נ':'ט','ס':'ח','ע':'ז','פ':'ו','צ':'ה','ק':'ד','ר':'ג','ש':'ב','ת':'א'}, albam: {'א':'ל','ב':'מ','ג':'נ','ד':'ס','ה':'ע','ו':'פ','ז':'צ','ח':'ק','ט':'ר','י':'ש','כ':'ת','ל':'א','מ':'ב','נ':'ג','ס':'ד','ע':'ה','פ':'ו','צ':'ז','ק':'ח','ר':'ט','ש':'י','ת':'כ'}, atbah: {'א':'ט','ב':'ח','ג':'ז','ד':'ו','ה':'ה','ו':'ד','ז':'ג','ח':'ב','ט':'א','י':'צ','כ':'פ','ל':'ע','מ':'ס','נ':'נ','ס':'מ','ע':'ל','פ':'כ','צ':'י','ק':'ת','ר':'ש','ש':'ר','ת':'ק'}, achbi: {'א':'כ','ב':'ל','ג':'מ','ד':'נ','ה':'ס','ו':'ע','ז':'פ','ח':'צ','ט':'ק','י':'ר','כ':'א','ל':'ב','מ':'ג','נ':'ד','ס':'ה','ע':'ו','פ':'ז','צ':'ח','ק':'ט','ר':'י','ש':'ת','ת':'ש'}, }; let result = ''; for (const char of text) { let transformedChar = char; if (type === 'avgad') { const index = hebrewNormal.indexOf(char); if (index !== -1) { transformedChar = hebrewNormal[(index + 1) % hebrewNormal.length]; } } else if (cipherMap[type] && cipherMap[type][char]) { transformedChar = cipherMap[type][char]; } result += transformedChar; } return result; }
         function generateNotarikon(text) { const cleaned = cleanInput(text); return cleaned.split('').map(char => { const data = hebrewChars[char]; return data ? `${char} (${data.name})` : char; }); }
 
@@ -112,35 +136,34 @@
         // --- DYNAMIC UPDATE & WEBHOOK FUNCTIONS ---
         function updateAllCalculations(rawInput) {
             const lang = detectLanguage(rawInput);
-            let hebrewInput = '';
-            let greekInput = '';
-            
+            let hebrewInput = '', greekInput = '';
             // Clear all areas
             ['detectedLang', 'transliteratedText', 'transliteratedGreekText', 'gematriaSingleResult', 'gematriaAnalysisResult', 'isopsephySingleResult', 'isopsephyAnalysisResult', 'cipherSingleResult', 'cipherAnalysisResult', 'notarikonResults', 'notarikonAnalysisResult'].forEach(id => document.getElementById(id).innerHTML = '');
             if (rawInput.trim() === '') return;
 
             if (lang === 'Ibrani') {
-                document.getElementById('detectedLang').textContent = 'Bahasa: Ibrani';
+                document.getElementById('detectedLang').textContent = 'Input: Ibrani';
                 hebrewInput = rawInput;
             } else if (lang === 'Yunani') {
-                document.getElementById('detectedLang').textContent = 'Bahasa: Yunani';
+                document.getElementById('detectedLang').textContent = 'Input: Yunani';
                 greekInput = rawInput;
-            } else { // Assumed Latin for transliteration
-                document.getElementById('detectedLang').textContent = 'Bahasa: Latin (Transliterasi)';
-                hebrewInput = transliterate(rawInput, translitHebrewMap);
-                greekInput = transliterate(rawInput, translitGreekMap);
+            } else { // Latin input logic
+                const dictionaryEntry = theologicalDictionary[rawInput.toLowerCase()];
+                if (dictionaryEntry) {
+                    document.getElementById('detectedLang').textContent = 'Input: Latin (Kamus Teologis)';
+                    hebrewInput = dictionaryEntry.hebrew || '';
+                    greekInput = dictionaryEntry.greek || '';
+                } else {
+                    document.getElementById('detectedLang').textContent = 'Input: Latin (Transliterasi Fonetik)';
+                    hebrewInput = transliterate(rawInput, translitHebrewMap);
+                    greekInput = transliterate(rawInput, translitGreekMap);
+                }
                 document.getElementById('transliteratedText').textContent = hebrewInput;
                 document.getElementById('transliteratedGreekText').textContent = greekInput;
             }
             
-            if (hebrewInput) {
-                updateGematriaResult(hebrewInput);
-                updateCipherResult(hebrewInput);
-                updateNotarikonResult(hebrewInput);
-            }
-            if (greekInput) {
-                updateIsopsephyResult(greekInput);
-            }
+            if (hebrewInput) { updateGematriaResult(hebrewInput); updateCipherResult(hebrewInput); updateNotarikonResult(hebrewInput); }
+            if (greekInput) { updateIsopsephyResult(greekInput); }
         }
         function updateGematriaResult(hebrewText) { const method = document.getElementById('gematriaMethod').value; const allValues = calculateGematria(hebrewText); const methodMap = { hechrechi: { label: 'Mispar Hechrechi', value: allValues.hechrechi, tip: 'Nilai standar/absolut.' }, siduri: { label: 'Mispar Siduri', value: allValues.siduri, tip: 'Nilai berdasarkan urutan alfabet (1-22).' }, katan: { label: 'Mispar Katan', value: allValues.katan, tip: 'Setiap huruf direduksi jadi 1 digit (nol dihilangkan).' }, katanMispari: { label: 'Mispar Katan Mispari', value: allValues.katanMispari, tip: 'Total nilai standar direduksi jadi 1 digit.' }, gadol: { label: 'Mispar Gadol', value: allValues.gadol, tip: 'Memperhitungkan nilai khusus huruf akhir (sofit).' }, milui: { label: 'Milui (Isian)', value: allValues.milui, tip: 'Nilai dari pengejaan penuh nama setiap huruf.' } }; const selected = methodMap[method]; if (selected) renderResult('gematriaSingleResult', selected.label, selected.value, selected.tip, 'gematria', { value: selected.value }); }
         function updateIsopsephyResult(greekText) { const value = calculateIsopsephy(greekText); renderResult('isopsephySingleResult', 'Nilai Isopsephy', value, 'Nilai numerik standar untuk alfabet Yunani.', 'isopsephy', { value: value, word: greekText }); }
