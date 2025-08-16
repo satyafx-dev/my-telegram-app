@@ -9,7 +9,8 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #111827; }
         .card { background-color: #1F2937; border: 1px solid #374151; }
-        .input-field { background-color: #374151; border: 1px solid #4B5563; color: #F9FAFB; }
+        .input-field, .textarea-field { background-color: #374151; border: 1px solid #4B5563; color: #F9FAFB; }
+        .textarea-field::placeholder { color: #9CA3AF; }
         .result-item { background-color: #374151; border-bottom: 1px solid #4B5563; }
         .result-item:last-child { border-bottom: none; }
         .accordion-button { background-color: #374151; transition: background-color 0.2s; }
@@ -50,14 +51,16 @@
                     <button class="accordion-button w-full text-left p-4 rounded-lg flex justify-between items-center"><span class="font-semibold text-lg text-amber-500">Gematria (Ibrani)</span><svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     <div class="accordion-content bg-gray-900/50 rounded-b-lg"><div class="p-4 space-y-4">
                         <div><label for="gematriaMethod" class="block text-sm font-medium text-gray-400 mb-2">Pilih Metode:</label><select id="gematriaMethod" class="input-field w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400"><option value="hechrechi">Mispar Hechrechi</option><option value="siduri">Mispar Siduri</option><option value="katan">Mispar Katan</option><option value="katanMispari">Mispar Katan Mispari</option><option value="gadol">Mispar Gadol</option><option value="milui">Milui (Isian)</option></select></div>
-                        <div id="gematriaSingleResult" class="min-h-[70px]"></div><div id="gematriaAnalysisResult" class="mt-4"></div>
+                        <div id="gematriaSingleResult" class="min-h-[70px]"></div>
+                        <textarea id="gematriaAnalysisResult" class="textarea-field w-full h-40 p-3 rounded-lg hidden" readonly placeholder="Hasil analisis AI akan muncul di sini..."></textarea>
                     </div></div>
                 </div>
                 <!-- Isopsephy Section -->
                 <div class="accordion-item">
                      <button class="accordion-button w-full text-left p-4 rounded-lg flex justify-between items-center"><span class="font-semibold text-lg text-sky-400">Isopsephy (Yunani)</span><svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     <div class="accordion-content bg-gray-900/50 rounded-b-lg"><div class="p-4 space-y-4">
-                        <div id="isopsephySingleResult" class="min-h-[70px]"></div><div id="isopsephyAnalysisResult" class="mt-4"></div>
+                        <div id="isopsephySingleResult" class="min-h-[70px]"></div>
+                        <textarea id="isopsephyAnalysisResult" class="textarea-field w-full h-40 p-3 rounded-lg hidden" readonly placeholder="Hasil analisis AI akan muncul di sini..."></textarea>
                     </div></div>
                 </div>
                 <!-- Ciphers Section -->
@@ -65,14 +68,16 @@
                     <button class="accordion-button w-full text-left p-4 rounded-lg flex justify-between items-center"><span class="font-semibold text-lg text-emerald-400">Cipher & Transformasi</span><svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     <div class="accordion-content bg-gray-900/50 rounded-b-lg"><div class="p-4 space-y-4">
                         <div><label for="cipherMethod" class="block text-sm font-medium text-gray-400 mb-2">Pilih Metode:</label><select id="cipherMethod" class="input-field w-full px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"><option value="atbash">Atbash</option><option value="albam">Albam</option><option value="atbah">Atbah</option><option value="achbi">Achbi</option><option value="avgad">Avgad</option></select></div>
-                        <div id="cipherSingleResult" class="min-h-[70px]"></div><div id="cipherAnalysisResult" class="mt-4"></div>
+                        <div id="cipherSingleResult" class="min-h-[70px]"></div>
+                        <textarea id="cipherAnalysisResult" class="textarea-field w-full h-40 p-3 rounded-lg hidden" readonly placeholder="Hasil analisis AI akan muncul di sini..."></textarea>
                     </div></div>
                 </div>
                 <!-- Notarikon Section -->
                 <div class="accordion-item">
                     <button class="accordion-button w-full text-left p-4 rounded-lg flex justify-between items-center"><span class="font-semibold text-lg text-fuchsia-400">Notarikon</span><svg class="w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button>
                     <div class="accordion-content bg-gray-900/50 rounded-b-lg"><div class="p-4 space-y-4">
-                        <div id="notarikonResults" class="min-h-[70px]"></div><div id="notarikonAnalysisResult" class="mt-4"></div>
+                        <div id="notarikonResults" class="min-h-[70px]"></div>
+                        <textarea id="notarikonAnalysisResult" class="textarea-field w-full h-40 p-3 rounded-lg hidden" readonly placeholder="Hasil analisis AI akan muncul di sini..."></textarea>
                     </div></div>
                 </div>
             </div>
@@ -114,7 +119,13 @@
         function updateAllCalculations(rawInput) {
             const lang = detectLanguage(rawInput);
             let hebrewInput = '', greekInput = '';
-            ['detectedLang', 'transliteratedText', 'transliteratedGreekText', 'gematriaSingleResult', 'gematriaAnalysisResult', 'isopsephySingleResult', 'isopsephyAnalysisResult', 'cipherSingleResult', 'cipherAnalysisResult', 'notarikonResults', 'notarikonAnalysisResult'].forEach(id => document.getElementById(id).innerHTML = '');
+            ['detectedLang', 'transliteratedText', 'transliteratedGreekText', 'gematriaSingleResult', 'isopsephySingleResult', 'cipherSingleResult', 'notarikonResults'].forEach(id => document.getElementById(id).innerHTML = '');
+            ['gematriaAnalysisResult', 'isopsephyAnalysisResult', 'cipherAnalysisResult', 'notarikonAnalysisResult'].forEach(id => {
+                const textarea = document.getElementById(id);
+                textarea.value = '';
+                textarea.classList.add('hidden');
+            });
+
             if (rawInput.trim() === '') return;
 
             if (lang === 'Ibrani') {
@@ -149,36 +160,38 @@
             const webhookUrl = 'https://n8n.theos-automata.com/webhook/283586d0-5a4d-473f-aa87-83757e784bfe'; // !!! GANTI DENGAN URL PRODUCTION ANDA !!!
             const containerId = `${payload.type}AnalysisResult`;
             const analysisContainer = document.getElementById(containerId);
-            analysisContainer.innerHTML = '<div class="flex items-center justify-center p-4"><div class="loader"></div><span class="ml-3 text-gray-400">AI sedang menganalisis...</span></div>';
+            analysisContainer.value = 'AI sedang menganalisis...';
+            analysisContainer.classList.remove('hidden');
+
             try {
                 const response = await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
-                // FIXED: Logic to handle n8n's AI Agent output structure
                 const rawData = await response.json();
                 let data;
-                // n8n AI Agent often wraps its stringified JSON in an 'output' key
                 if (rawData.output && typeof rawData.output === 'string') {
                     data = JSON.parse(rawData.output);
                 } else {
-                    // Fallback for clean JSON or other structures
                     data = rawData;
                 }
 
-                let resultHtml = '';
+                let resultText = '';
                 if (data.equivalences && data.equivalences.length > 0) {
-                    resultHtml += '<h4 class="text-md font-semibold text-amber-400 mb-2">Padanan Ditemukan:</h4><ul class="space-y-2">';
-                    data.equivalences.forEach(item => { resultHtml += `<li class="text-lg flex justify-between items-center" dir="auto"><span>${item.word}</span> <span class="text-sm text-gray-400 ml-4" dir="ltr">${item.meaning}</span></li>`; });
-                    resultHtml += '</ul>';
+                    resultText += 'Padanan Ditemukan:\n';
+                    data.equivalences.forEach(item => {
+                        resultText += `- ${item.word} (${item.meaning})\n`;
+                    });
+                    resultText += '\n';
                 }
                 if (data.analysis) {
-                    resultHtml += `<h4 class="text-md font-semibold text-amber-400 mt-4 mb-2">Analisis Teologis AI:</h4>`;
-                    resultHtml += `<p class="text-gray-300 whitespace-pre-wrap">${data.analysis}</p>`;
+                    resultText += 'Analisis Teologis AI:\n';
+                    resultText += data.analysis;
                 }
-                analysisContainer.innerHTML = resultHtml === '' ? '<p class="text-gray-400 text-center p-4">Tidak ada analisis yang ditemukan.</p>' : resultHtml;
+                
+                analysisContainer.value = resultText.trim() !== '' ? resultText : 'Tidak ada analisis yang ditemukan.';
             } catch (error) {
                 console.error('Error fetching analysis:', error);
-                analysisContainer.innerHTML = `<p class="text-red-400 text-center p-4">Gagal memproses jawaban AI. Periksa format output di n8n. (${error.message})</p>`;
+                analysisContainer.value = `Gagal memproses jawaban AI. Periksa format output di n8n.\n\nError: ${error.message}`;
             }
         }
 
@@ -210,5 +223,3 @@
 
 </body>
 </html>
-```
-
