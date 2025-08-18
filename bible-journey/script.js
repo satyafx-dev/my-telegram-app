@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- KONFIGURASI ---
     // GANTI DENGAN URL WEBHOOK N8N ANDA YANG SEBENARNYA (PRODUCTION URL)
-    const N8N_WEBHOOK_URL = 'https://<NAMA_INSTANCE_N8N_ANDA>/webhook/bible-journey-pericope'; 
+    const N8N_WEBHOOK_URL = 'https://dshbiniakqjjqksvywve.supabase.co/rpc/get_bible_pericope'; 
 
     // Daftar kitab yang di-hardcode
     const OLD_TESTAMENT_BOOKS = [
