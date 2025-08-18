@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     tg.expand();
 
     // --- KONFIGURASI ---
-    // GANTI DENGAN URL WEBHOOK N8N ANDA
-    const N8N_WEBHOOK_URL = 'https://n8n.theos-automata.com/webhook/bible-journey-pericope'; 
+    // GANTI DENGAN URL WEBHOOK N8N ANDA YANG SEBENARNYA (PRODUCTION URL)
+    const N8N_WEBHOOK_URL = 'https://<NAMA_INSTANCE_N8N_ANDA>/webhook/bible-journey-pericope'; 
 
     // Daftar kitab yang di-hardcode
     const OLD_TESTAMENT_BOOKS = [
@@ -44,20 +44,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Variabel untuk menyimpan state navigasi modal
     let currentBook = null;
     let currentPericopeOrder = 0;
+    let progressDataCache = null; // Cache untuk data progres
 
     /**
      * Fungsi untuk membuat dan menampilkan elemen kitab di daftar.
-     * @param {string} bookName - Nama kitab.
-     * @param {HTMLElement} container - Elemen kontainer (PL atau PB).
      */
     function renderBook(bookName, container) {
         const bookElement = bookTemplate.firstElementChild.cloneNode(true);
         bookElement.dataset.book = bookName;
         bookElement.querySelector('.book-name').textContent = bookName;
         
-        // Menambahkan event listener untuk membuka modal saat diklik
         bookElement.addEventListener('click', () => {
-            showPericope(bookName);
+            // Menggunakan data progres dari cache untuk mendapatkan urutan terakhir
+            const bookProgress = progressDataCache ? progressDataCache[bookName] : null;
+            const nextOrder = bookProgress ? bookProgress.read + 1 : null;
+            showPericope(bookName, nextOrder);
         });
 
         container.appendChild(bookElement);
@@ -72,12 +73,14 @@ document.addEventListener('DOMContentLoaded', () => {
         await new Promise(resolve => setTimeout(resolve, 500)); 
 
         try {
-            console.warn("Menggunakan data dummy. Ganti dengan API Anda.");
+            // GANTI DENGAN API PROGRES ANDA NANTI
+            console.warn("Menggunakan data progres dummy. Ganti dengan API Anda.");
             const dummyData = {
                 "Kejadian": { "read": 50, "total": 78 }, "Keluaran": { "read": 23, "total": 69 },
                 "Matius": { "read": 28, "total": 28 }, "Markus": { "read": 10, "total": 16 },
                 "Wahyu": { "read": 1, "total": 22 }
             };
+            progressDataCache = dummyData; // Simpan ke cache
             return dummyData;
         } catch (error) {
             console.error("Error fetching progress data:", error);
@@ -91,7 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Fungsi untuk memperbarui UI dengan data progres yang diterima.
-     * @param {object} progressData - Data progres dari API.
      */
     function updateUI(progressData) {
         let totalReadPL = 0, totalChaptersPL = 0;
@@ -136,8 +138,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /**
      * Menampilkan modal dan memuat data perikop.
-     * @param {string} bookName - Nama kitab yang diklik.
-     * @param {number|null} order - Urutan perikop yang diminta (null untuk perikop terbaru).
      */
     async function showPericope(bookName, order = null) {
         currentBook = bookName;
@@ -154,7 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 prevButton.disabled = pericopeData.isFirst;
                 nextButton.disabled = pericopeData.isLast;
             } else {
-                throw new Error('Data perikop tidak valid.');
+                // Jika tidak ada data (misal perikop terakhir sudah dibaca)
+                throw new Error('Semua perikop di kitab ini sudah selesai dibaca.');
             }
 
         } catch (error) {
@@ -168,31 +169,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * === FUNGSI YANG DIPERBARUI ===
      * Melakukan fetch ke webhook n8n untuk mendapatkan detail perikop.
-     * @param {string} book - Nama kitab.
-     * @param {number|null} order - Urutan perikop. Null berarti minta perikop selanjutnya yg belum dibaca.
      */
     async function fetchPericopeFromN8N(book, order) {
-        // --- DATA DUMMY UNTUK DEMONSTRASI ---
-        console.warn("Menggunakan data perikop dummy. Ganti dengan API N8N Anda.");
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const requestedOrder = order !== null ? order : 2;
-        if (requestedOrder < 1) return { isFirst: true };
-        if (requestedOrder > 5) return { isLast: true };
+        // Pastikan URL webhook Anda sudah benar (Production URL)
+        if (!N8N_WEBHOOK_URL || N8N_WEBHOOK_URL.includes('example.com')) {
+            throw new Error("URL Webhook n8n belum dikonfigurasi di script.js");
+        }
 
-        return {
-            title: `Perikop #${requestedOrder} dari ${book}`,
-            theology: `Ini adalah makna teologis untuk perikop urutan ke-${requestedOrder} yang dihasilkan oleh AI.`,
-            reflection: `Ini adalah renungan aplikatif untuk perikop urutan ke-${requestedOrder} yang bisa diterapkan dalam kehidupan sehari-hari.`,
-            order: requestedOrder,
-            isFirst: requestedOrder === 1,
-            isLast: requestedOrder === 5,
-        };
+        // Dapatkan userId dari Telegram initData (perlu divalidasi di backend)
+        // Untuk sekarang kita kirim dummy userId, ganti dengan logika yang benar
+        const userId = tg.initDataUnsafe?.user?.id || 'dummy_user_123';
+
+        const response = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                // Kirim data yang dibutuhkan oleh fungsi Supabase Anda
+                userId: userId,
+                book: book,
+                order: order
+            })
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.text();
+            console.error("n8n response error:", errorBody);
+            throw new Error(`Request ke n8n gagal dengan status ${response.status}`);
+        }
+        
+        const result = await response.json();
+
+        // Jika n8n mengembalikan JSON dari AI di dalam properti 'output'
+        if (typeof result.output === 'string') {
+            return JSON.parse(result.output);
+        }
+        // Jika n8n langsung mengembalikan objek JSON
+        return result;
     }
 
     /**
      * Mengisi konten modal dengan data perikop.
-     * @param {object} data - Data perikop dari n8n.
      */
     function populateModal(data) {
         pericopeTitle.textContent = data.title;
