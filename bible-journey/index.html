@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bible Journey Progress</title>
+    <!-- Memuat Font Inter dari Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Memuat file CSS -->
     <link rel="stylesheet" href="style.css">
+    <!-- Memuat script dari Telegram -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -16,34 +22,50 @@
         </header>
 
         <main>
+            <!-- Kartu untuk ringkasan progres keseluruhan -->
             <section class="summary-card" id="overall-summary">
                 <h2>Progres Keseluruhan</h2>
                 <div class="progress-bar-container">
                     <div class="progress-bar" id="overall-progress-bar" style="width: 0%;"></div>
                 </div>
-                <p id="overall-progress-text">0%</p>
+                <p id="overall-progress-text">0% (0/1189 Pasal)</p>
             </section>
 
-            <section class="testament-section">
-                <div class="collapsible">
-                    <h2>Perjanjian Lama</h2>
-                    <span class="summary-text" id="pl-summary-text">0% Selesai</span>
-                </div>
-                <div class="content" id="old-testament-list">
-                    </div>
-            </section>
+            <!-- Pesan Loading -->
+            <div id="loading-indicator">
+                <p>Memuat progres Anda...</p>
+            </div>
 
-            <section class="testament-section">
-                <div class="collapsible">
-                    <h2>Perjanjian Baru</h2>
-                    <span class="summary-text" id="pb-summary-text">0% Selesai</span>
-                </div>
-                <div class="content" id="new-testament-list">
+            <!-- Konten Utama yang akan ditampilkan setelah loading -->
+            <div id="main-content" class="hidden">
+                <!-- Bagian Perjanjian Lama -->
+                <section class="testament-section">
+                    <div class="collapsible active">
+                        <h2>Perjanjian Lama</h2>
+                        <span class="summary-text" id="pl-summary-text">0% Selesai</span>
+                        <span class="chevron"></span>
                     </div>
-            </section>
+                    <div class="content show" id="old-testament-list">
+                        <!-- Daftar kitab Perjanjian Lama akan diisi oleh JavaScript -->
+                    </div>
+                </section>
+
+                <!-- Bagian Perjanjian Baru -->
+                <section class="testament-section">
+                    <div class="collapsible">
+                        <h2>Perjanjian Baru</h2>
+                        <span class="summary-text" id="pb-summary-text">0% Selesai</span>
+                        <span class="chevron"></span>
+                    </div>
+                    <div class="content" id="new-testament-list">
+                        <!-- Daftar kitab Perjanjian Baru akan diisi oleh JavaScript -->
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
 
+    <!-- Template untuk setiap item kitab (disembunyikan) -->
     <div id="book-item-template" style="display: none;">
         <div class="book-item">
             <span class="book-name">Nama Kitab</span>
@@ -51,12 +73,40 @@
                 <div class="progress-bar-container">
                     <div class="progress-bar"></div>
                 </div>
-                <span class="progress-text">0/0 pasal</span>
+                <span class="progress-text">0/0</span>
                 <span class="progress-percentage">0%</span>
             </div>
         </div>
     </div>
+    
+    <!-- === BAGIAN BARU: MODAL UNTUK MENAMPILKAN PERIKOP === -->
+    <div id="pericope-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-button">&times;</button>
+            <div id="modal-loader" class="hidden">
+                <div class="spinner"></div>
+                <p>Memuat perikop...</p>
+            </div>
+            <div id="modal-body">
+                <h2 id="pericope-title">Judul Perikop</h2>
+                <div class="pericope-section">
+                    <h3>Makna Teologis</h3>
+                    <p id="pericope-theology"></p>
+                </div>
+                <div class="pericope-section">
+                    <h3>Renungan Aplikatif</h3>
+                    <p id="pericope-reflection"></p>
+                </div>
+            </div>
+            <div class="modal-navigation">
+                <button id="prev-button" class="nav-button">Sebelumnya</button>
+                <button id="next-button" class="nav-button">Berikutnya</button>
+            </div>
+        </div>
+    </div>
+    <!-- === AKHIR BAGIAN BARU === -->
 
+    <!-- Memuat file JavaScript -->
     <script src="script.js"></script>
 
 </body>
