@@ -12,24 +12,43 @@
     <link rel="stylesheet" href="style.css">
     <!-- Memuat script dari Telegram -->
 
-<script src="https://unpkg.com/@supabase/supabase-js"></script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
   const SUPABASE_URL = "https://dshbiniakqjjqksvywve.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzaGJpbmlha3FqanFrc3Z5d3ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MTk5MjcsImV4cCI6MjA2Nzk5NTkyN30.OmCSDnStSv8bucVxt7I54gV3DYA-20iFvBkcapTPLvM"; // anon key dari Supabase
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth: { persistSession: false }});
 
-  async function getPericope(book_name, chapter_num) {
-    const { data, error } = await supabase.rpc('get_bible_pericope', { book_name, chapter_num });
-    if (error) {
-      console.error(error);
-      return null;
-    }
+  function getUserId() {
+    try {
+      const tg = window.Telegram?.WebApp;
+      return tg?.initDataUnsafe?.user?.id?.toString() ?? 'guest';
+    } catch { return 'guest'; }
+  }
+    
+  // PANGGIL RPC DENGAN NAMA PARAM YANG BENAR
+  async function getPericope({ book, order = null }) {
+    const { data, error } = await supabase.rpc('get_bible_pericope', {
+      user_id_param: getUserId(), // text
+      book_param: book,           // text
+      order_param: order          // integer atau null
+    });
+    if (error) throw error;
     return data;
   }
 
-  // contoh panggil
-  getPericope("Kejadian", 1).then(console.log);
+    
+
+   // contoh pakai
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const row = await getPericope({ book: 'Kejadian', order: null });
+      console.log('Perikop:', row);
+    } catch (e) {
+      console.error('RPC error:', e);
+      alert('Gagal memuat perikop.');
+    }
+  });
 </script>
 
     
