@@ -11,6 +11,28 @@
     <!-- Memuat file CSS -->
     <link rel="stylesheet" href="style.css">
     <!-- Memuat script dari Telegram -->
+
+<script src="https://unpkg.com/@supabase/supabase-js"></script>
+<script>
+  const SUPABASE_URL = "https://xxxx.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzaGJpbmlha3FqanFrc3Z5d3ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MTk5MjcsImV4cCI6MjA2Nzk5NTkyN30.OmCSDnStSv8bucVxt7I54gV3DYA-20iFvBkcapTPLvM"; // anon key dari Supabase
+
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  async function getPericope(book_name, chapter_num) {
+    const { data, error } = await supabase.rpc('get_bible_pericope', { book_name, chapter_num });
+    if (error) {
+      console.error(error);
+      return null;
+    }
+    return data;
+  }
+
+  // contoh panggil
+  getPericope("Kejadian", 1).then(console.log);
+</script>
+
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
