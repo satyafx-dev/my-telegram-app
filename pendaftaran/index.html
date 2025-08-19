@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Lengkapi Profil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
             --tg-theme-bg-color: #ffffff;
@@ -28,6 +29,8 @@
             width: 100%;
             max-width: 500px;
             margin: 0 auto;
+            /* PENAMBAHAN: Padding bawah agar link tidak tertutup tombol */
+            padding-bottom: 80px; 
         }
         h1 {
             font-size: 24px;
@@ -83,6 +86,19 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        /* PENAMBAHAN: STYLE UNTUK FOOTER LINK */
+        .footer-link {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .footer-link a {
+            color: var(--tg-theme-link-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-link a i {
+            margin-right: 8px;
+        }
     </style>
 </head>
 <body>
@@ -92,7 +108,7 @@
         <p id="welcome-text">Halo! Mohon lengkapi data di bawah ini.</p>
 
         <div id="registration-form" style="display: none;">
-            
+           
             <div class="form-group">
                 <label for="audience-select">Target Renungan</label>
                 <select id="audience-select">
@@ -120,12 +136,18 @@
                     <option value="">Memuat daftar gereja...</option>
                 </select>
             </div>
-            
+           
             <div id="error-message" class="error" style="display: none;"></div>
         </div>
-        
+       
         <div id="initial-loading" class="loading">
             <p>Mempersiapkan formulir...</p>
+        </div>
+
+        <div class="footer-link">
+            <a href="bot-lists.html">
+                <i class="fas fa-robot"></i> Jelajahi Ekosistem Theos
+            </a>
         </div>
     </div>
 
@@ -139,13 +161,13 @@
         // PENTING: Ganti URL di bawah ini dengan URL Webhook PRODUKSI dari n8n!
         // ===================================================================
         const GET_CHURCHES_URL = "https://n8n.theos-automata.com/webhook/3c185c24-cdc0-470b-90c4-795fada76de3";
-        
+       
         //const GET_CHURCHES_URL = "https://ultimate-grateful-mustang.ngrok-free.app/webhook/3c185c24-cdc0-470b-90c4-795fada76de3";
-        
+       
         // URL untuk menyimpan data (buat webhook baru untuk ini)
         const UPDATE_PROFILE_URL = "https://n8n.theos-automata.com/webhook/604ef313-ffd0-4894-9c6a-2019d26711a8";
         //const UPDATE_PROFILE_URL = "https://ultimate-grateful-mustang.ngrok-free.app/webhook/604ef313-ffd0-4894-9c6a-2019d26711a8";
-        
+       
 
         // Elemen UI
         const welcomeText = document.getElementById('welcome-text');
@@ -173,7 +195,7 @@
         if (user && user.first_name) {
             welcomeText.textContent = `Halo, ${user.first_name}! Mohon lengkapi data di bawah ini.`;
         }
-        
+       
         async function fetchChurches() {
             if (GET_CHURCHES_URL.includes("PASTE_YOUR_FULL_PRODUCTION_URL_HERE")) {
                 showError("<b>Kesalahan Konfigurasi.</b><br>URL untuk mengambil data gereja belum diatur.");
