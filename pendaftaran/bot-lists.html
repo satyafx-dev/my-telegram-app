@@ -17,6 +17,7 @@
             --off-white: #F5F5F5;
             --gold: #CFB53B;
             --light-gray: #a9a9a9;
+            --green-free: #28a745;
             --font-serif: 'EB Garamond', serif;
             --font-sans: 'Lato', sans-serif;
         }
@@ -59,6 +60,9 @@
             gap: 20px;
             transition: background-color 0.3s ease;
         }
+        .bot-card.free-tier {
+             border-left: 4px solid var(--green-free);
+        }
         .bot-card.locked {
             border-left-color: #555;
             background-color: #222;
@@ -70,14 +74,41 @@
             width: 50px;
             text-align: center;
         }
+        .bot-card.free-tier .bot-icon {
+            color: var(--green-free);
+        }
         .bot-card.locked .bot-icon {
             color: #555;
+        }
+        .bot-info {
+            flex-grow: 1;
+        }
+        .bot-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
         }
         .bot-info h3 {
             font-family: var(--font-serif);
             color: var(--off-white);
             font-size: 1.25rem;
-            margin: 0 0 5px 0;
+            margin: 0;
+        }
+        .bot-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 5px;
+            text-transform: uppercase;
+        }
+        .bot-tag.free {
+            background-color: var(--green-free);
+            color: white;
+        }
+        .bot-tag.premium {
+            background-color: var(--gold);
+            color: var(--charcoal);
         }
         .bot-card.locked .bot-info h3 {
             color: #777;
@@ -106,9 +137,17 @@
             align-items: center;
             text-decoration: none;
         }
+        .bot-card.free-tier .action-btn {
+             border: 1px solid var(--green-free);
+             color: var(--green-free);
+        }
         .action-btn:hover {
             background-color: var(--gold);
             color: var(--charcoal);
+        }
+        .bot-card.free-tier .action-btn:hover {
+             background-color: var(--green-free);
+             color: white;
         }
         .bot-card.locked .action-btn {
             border-color: #555;
@@ -117,10 +156,11 @@
         }
         .separator {
             text-align: center;
-            color: #555;
+            color: var(--light-gray);
             font-family: var(--font-serif);
             margin: 20px 0 10px 0;
             font-size: 1.2rem;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -134,11 +174,82 @@
 
         <div class="bot-list">
 
+            <div class="separator">Layanan Gratis</div>
+
+            <a href="https://t.me/TheosKonselingBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card free-tier">
+                    <div class="bot-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                    <div class="bot-info">
+                        <div class="bot-info-header">
+                            <h3>Theos Counsellor</h3>
+                            <div class="bot-tag free">Gratis</div>
+                        </div>
+                        <p>Ruang aman untuk berkeluh kesah. AI yang dilatih untuk mendengarkan dan memberikan nasihat berbasis firman Tuhan.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://t.me/TheosMarriageCounsellorBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card free-tier">
+                    <div class="bot-icon"><i class="fas fa-ring"></i></div>
+                    <div class="bot-info">
+                        <div class="bot-info-header">
+                            <h3>Marriage Counsellor</h3>
+                            <div class="bot-tag free">Gratis</div>
+                        </div>
+                        <p>Konselor pernikahan virtual untuk membantu menavigasi dinamika rumah tangga sesuai dengan prinsip Kristiani.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://t.me/TheosFinancialConsultantBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card free-tier">
+                    <div class="bot-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="bot-info">
+                        <div class="bot-info-header">
+                            <h3>Financial Consultant</h3>
+                            <div class="bot-tag free">Gratis</div>
+                        </div>
+                        <p>Dapatkan panduan untuk mengelola keuangan pribadi dan keluarga Anda sesuai dengan prinsip-prinsip Alkitabiah.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://t.me/HukumIndonesiaBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card free-tier">
+                    <div class="bot-icon"><i class="fas fa-balance-scale"></i></div>
+                    <div class="bot-info">
+                         <div class="bot-info-header">
+                            <h3>Legal Assistant</h3>
+                            <div class="bot-tag free">Gratis</div>
+                        </div>
+                        <p>Konsultasi permasalahan hukum di Indonesia dengan perspektif yang didasari oleh nilai-nilai kebenaran.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <div class="separator">Layanan Premium</div>
+
             <a href="https://t.me/TheosEscaAndApologetBot" target="_blank" style="text-decoration: none;">
                 <div class="bot-card">
                     <div class="bot-icon"><i class="fas fa-satellite-dish"></i></div>
                     <div class="bot-info">
-                        <h3>Radar Eskatologi & Apologetika</h3>
+                        <div class="bot-info-header">
+                            <h3>Radar Eskatologi & Apologetika</h3>
+                            <div class="bot-tag premium">Premium</div>
+                        </div>
                         <p>Analisis tanda-tanda zaman dan deteksi dini ajaran keliru, membentengi iman Anda di tengah arus informasi modern.</p>
                     </div>
                     <div class="bot-action">
@@ -151,34 +262,11 @@
                 <div class="bot-card">
                     <div class="bot-icon"><i class="fas fa-graduation-cap"></i></div>
                     <div class="bot-info">
-                        <h3>Theos Theology Tutor</h3>
+                        <div class="bot-info-header">
+                            <h3>Theos Theology Tutor</h3>
+                            <div class="bot-tag premium">Premium</div>
+                        </div>
                         <p>Tanyakan apa saja seputar doktrin, sejarah gereja, hingga apologetika. Dapatkan jawaban teologis yang terstruktur.</p>
-                    </div>
-                    <div class="bot-action">
-                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <a href="https://t.me/TheosKonselingBot" target="_blank" style="text-decoration: none;">
-                <div class="bot-card">
-                    <div class="bot-icon"><i class="fas fa-hand-holding-heart"></i></div>
-                    <div class="bot-info">
-                        <h3>Theos Counsellor</h3>
-                        <p>Ruang aman untuk berkeluh kesah. AI yang dilatih untuk mendengarkan dan memberikan nasihat berbasis firman Tuhan.</p>
-                    </div>
-                    <div class="bot-action">
-                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <a href="https://t.me/TheosMarriageCounsellorBot" target="_blank" style="text-decoration: none;">
-                <div class="bot-card">
-                    <div class="bot-icon"><i class="fas fa-ring"></i></div>
-                    <div class="bot-info">
-                        <h3>Marriage Counsellor</h3>
-                        <p>Konselor pernikahan virtual untuk membantu menavigasi dinamika rumah tangga sesuai dengan prinsip Kristiani.</p>
                     </div>
                     <div class="bot-action">
                         <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
@@ -190,7 +278,10 @@
                 <div class="bot-card">
                     <div class="bot-icon"><i class="fas fa-chalkboard-teacher"></i></div>
                     <div class="bot-info">
-                        <h3>Theos Classes</h3>
+                        <div class="bot-info-header">
+                            <h3>Theos Classes</h3>
+                            <div class="bot-tag premium">Premium</div>
+                        </div>
                         <p>Platform kelas online untuk belajar segala hal tentang Kekristenan secara mendalam, kapan saja dan di mana saja.</p>
                     </div>
                     <div class="bot-action">
@@ -199,32 +290,6 @@
                 </div>
             </a>
 
-            <a href="https://t.me/TheosFinancialConsultantBot" target="_blank" style="text-decoration: none;">
-                <div class="bot-card">
-                    <div class="bot-icon"><i class="fas fa-money-bill-wave"></i></div>
-                    <div class="bot-info">
-                        <h3>Financial Consultant</h3>
-                        <p>Dapatkan panduan untuk mengelola keuangan pribadi dan keluarga Anda sesuai dengan prinsip-prinsip Alkitabiah.</p>
-                    </div>
-                    <div class="bot-action">
-                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-
-            <a href="https://t.me/HukumIndonesiaBot" target="_blank" style="text-decoration: none;">
-                <div class="bot-card">
-                    <div class="bot-icon"><i class="fas fa-balance-scale"></i></div>
-                    <div class="bot-info">
-                        <h3>Legal Assistant</h3>
-                        <p>Konsultasi permasalahan hukum di Indonesia dengan perspektif yang didasari oleh nilai-nilai kebenaran.</p>
-                    </div>
-                    <div class="bot-action">
-                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
-                    </div>
-                </div>
-            </a>
-            
             <div class="separator">Segera Hadir</div>
             
             <div class="bot-card locked">
