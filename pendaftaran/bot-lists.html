@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekosistem Theos Automata</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --charcoal: #1E1E1E;
+            --slate-gray: #2a2a2e;
+            --off-white: #F5F5F5;
+            --gold: #CFB53B;
+            --light-gray: #a9a9a9;
+            --font-serif: 'EB Garamond', serif;
+            --font-sans: 'Lato', sans-serif;
+        }
+        body {
+            background-color: var(--charcoal);
+            color: var(--off-white);
+            font-family: var(--font-sans);
+            margin: 0;
+            padding: 25px 15px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-family: var(--font-serif);
+            color: var(--gold);
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+        .header p {
+            color: var(--light-gray);
+            font-size: 1rem;
+        }
+        .bot-list {
+            display: grid;
+            gap: 15px;
+        }
+        .bot-card {
+            background-color: var(--slate-gray);
+            border-left: 4px solid var(--gold);
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: background-color 0.3s ease;
+        }
+        .bot-card.locked {
+            border-left-color: #555;
+            background-color: #222;
+            cursor: not-allowed;
+        }
+        .bot-icon {
+            font-size: 2.5rem;
+            color: var(--gold);
+            width: 50px;
+            text-align: center;
+        }
+        .bot-card.locked .bot-icon {
+            color: #555;
+        }
+        .bot-info h3 {
+            font-family: var(--font-serif);
+            color: var(--off-white);
+            font-size: 1.25rem;
+            margin: 0 0 5px 0;
+        }
+        .bot-card.locked .bot-info h3 {
+            color: #777;
+        }
+        .bot-info p {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+        .bot-action {
+            margin-left: auto;
+        }
+        .action-btn {
+            background: none;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+        }
+        .action-btn:hover {
+            background-color: var(--gold);
+            color: var(--charcoal);
+        }
+        .bot-card.locked .action-btn {
+            border-color: #555;
+            color: #555;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>Ekosistem Theos Automata</h1>
+            <p>Alat bantu AI untuk pertumbuhan iman Anda.</p>
+        </div>
+
+        <div class="bot-list">
+
+            <div class="bot-card locked">
+                <div class="bot-icon"><i class="fas fa-shield-halved"></i></div>
+                <div class="bot-info">
+                    <h3>Theos Dashboard</h3>
+                    <p>Panel analitik dan manajemen jemaat. Fitur ini dirancang khusus untuk para Gembala dan Pimpinan Gereja.</p>
+                </div>
+                <div class="bot-action">
+                    <div class="action-btn"><i class="fas fa-lock"></i></div>
+                </div>
+            </div>
+
+            <div class="bot-card locked">
+                <div class="bot-icon"><i class="fas fa-calculator"></i></div>
+                <div class="bot-info">
+                    <h3>Hermeneutics Mystic</h3>
+                    <p>Selami makna tersembunyi Alkitab melalui gematria Ibrani. Fitur ini sedang dalam pengembangan.</p>
+                </div>
+                <div class="bot-action">
+                    <div class="action-btn"><i class="fas fa-lock"></i></div>
+                </div>
+            </div>
+
+            <a href="https://t.me/TheosEscaAndApologetBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-satellite-dish"></i></div>
+                    <div class="bot-info">
+                        <h3>Radar Eskatologi & Apologetika</h3>
+                        <p>Analisis tanda-tanda zaman dan deteksi dini ajaran keliru, membentengi iman Anda di tengah arus informasi modern.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="https://t.me/TheosMentorBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div class="bot-info">
+                        <h3>Theos Theology Tutor</h3>
+                        <p>Tanyakan apa saja seputar doktrin, sejarah gereja, hingga apologetika. Dapatkan jawaban teologis yang terstruktur.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://t.me/TheosKonselingBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-hand-holding-heart"></i></div>
+                    <div class="bot-info">
+                        <h3>Theos Counsellor</h3>
+                        <p>Ruang aman untuk berkeluh kesah. AI yang dilatih untuk mendengarkan dan memberikan nasihat berbasis firman Tuhan.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://t.me/TheosMarriageCounsellorBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-ring"></i></div>
+                    <div class="bot-info">
+                        <h3>Marriage Counsellor</h3>
+                        <p>Konselor pernikahan virtual untuk membantu menavigasi dinamika rumah tangga sesuai dengan prinsip Kristiani.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://t.me/TheosBibleJourneyBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-map-signs"></i></div>
+                    <div class="bot-info">
+                        <h3>Theos Bible Journey</h3>
+                        <p>Jelajahi Alkitab secara interaktif. Ikuti rencana baca, kuis, dan visualisasi kisah-kisah di dalam Kitab Suci.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="https://t.me/TheosClassesBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div class="bot-info">
+                        <h3>Theos Classes</h3>
+                        <p>Platform kelas online untuk belajar segala hal tentang Kekristenan secara mendalam, kapan saja dan di mana saja.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://t.me/TheosFinancialConsultantBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div class="bot-info">
+                        <h3>Financial Consultant</h3>
+                        <p>Dapatkan panduan untuk mengelola keuangan pribadi dan keluarga Anda sesuai dengan prinsip-prinsip Alkitabiah.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+            <a href="https://t.me/HukumIndonesiaBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-balance-scale"></i></div>
+                    <div class="bot-info">
+                        <h3>Legal Assistant</h3>
+                        <p>Konsultasi permasalahan hukum di Indonesia dengan perspektif yang didasari oleh nilai-nilai kebenaran.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="https://t.me/TheosJobVacancyBot" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-briefcase"></i></div>
+                    <div class="bot-info">
+                        <h3>Theos Job Vacancy</h3>
+                        <p>Menjadi saluran berkat bagi jemaat. Temukan dan bagikan informasi lowongan pekerjaan di dalam komunitas.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+            
+            <a href="https://t.me/theosprayerwallchannel" target="_blank" style="text-decoration: none;">
+                <div class="bot-card">
+                    <div class="bot-icon"><i class="fas fa-praying-hands"></i></div>
+                    <div class="bot-info">
+                        <h3>Prayer Wall Channel</h3>
+                        <p>Dinding doa digital untuk saling mendoakan, menguatkan, dan membagikan kesaksian campur tangan Tuhan.</p>
+                    </div>
+                    <div class="bot-action">
+                        <span class="action-btn"><i class="fas fa-arrow-right"></i></span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+
+</body>
+</html>
