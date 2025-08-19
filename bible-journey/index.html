@@ -4,54 +4,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bible Journey Progress</title>
-    <!-- Memuat Font Inter dari Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Memuat file CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- Memuat script dari Telegram -->
-
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "https://dshbiniakqjjqksvywve.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzaGJpbmlha3FqanFrc3Z5d3ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MTk5MjcsImV4cCI6MjA2Nzk5NTkyN30.OmCSDnStSv8bucVxt7I54gV3DYA-20iFvBkcapTPLvM"; // anon key dari Supabase
-
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth: { persistSession: false }});
-
-  function getUserId() {
-    try {
-      const tg = window.Telegram?.WebApp;
-      return tg?.initDataUnsafe?.user?.id?.toString() ?? 'guest';
-    } catch { return 'guest'; }
-  }
     
-  // PANGGIL RPC DENGAN NAMA PARAM YANG BENAR
-  async function getPericope({ book, order = null }) {
-    const { data, error } = await supabase.rpc('get_bible_pericope', {
-      user_id_param: getUserId(), // text
-      book_param: book,           // text
-      order_param: order          // integer atau null
-    });
-    if (error) throw error;
-    return data;
-  }
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
-    
+    <script>
+      // Inisialisasi Supabase Client (bisa tetap ada jika diperlukan untuk fitur lain)
+      const SUPABASE_URL = "https://dshbiniakqjjqksvywve.supabase.co";
+      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzaGJpbmlha3FqanFrc3Z5d3ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MTk5MjcsImV4cCI6MjA2Nzk5NTkyN30.OmCSDnStSv8bucVxt7I54gV3DYA-20iFvBkcapTPLvM";
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth: { persistSession: false }});
 
-   // contoh pakai
-  document.addEventListener('DOMContentLoaded', async () => {
-    try {
-      const row = await getPericope({ book: 'Kejadian', order: null });
-      console.log('Perikop:', row);
-    } catch (e) {
-      console.error('RPC error:', e);
-      alert('Gagal memuat perikop.');
-    }
-  });
-</script>
+      // URL Webhook n8n Anda
+      const N8N_WEBHOOK_URL = 'https://n8n.theos-automata.com/webhook/bible-journey-pericope';
 
-    
+      // Fungsi untuk mendapatkan User ID dari Telegram
+      function getUserId() {
+        try {
+          const tg = window.Telegram?.WebApp;
+          return tg?.initDataUnsafe?.user?.id?.toString() ?? 'guest';
+        } catch { return 'guest'; }
+      }
+      
+      // FUNGSI getPericope YANG SUDAH DIPERBAIKI
+      // Sekarang memanggil n8n, bukan lagi Supabase secara langsung.
+      async function getPericope({ book, order = null }) {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            book: book, 
+            order: order, 
+            userID: getUserId() // Mengirim userID ke n8n
+          })
+        });
+
+        if (!response.ok) {
+          // Jika respons dari n8n tidak berhasil (misal: error 500, 404), lempar error.
+          throw new Error(`Gagal memuat perikop dari n8n. Status: ${response.status}`);
+        }
+        
+        // Mengembalikan data JSON dari n8n
+        return await response.json();
+      }
+
+      // Event listener untuk testing saat halaman dimuat
+      document.addEventListener('DOMContentLoaded', async () => {
+        try {
+          // Inisialisasi Telegram Web App agar bisa di-expand
+          const tg = window.Telegram?.WebApp;
+          if (tg) {
+            tg.expand();
+          }
+
+          // Test memanggil fungsi getPericope yang baru
+          const row = await getPericope({ book: 'Kejadian', order: null });
+          console.log('Perikop dari n8n:', row);
+        } catch (e) {
+          console.error('Gagal saat inisialisasi atau memuat perikop:', e);
+          alert('Gagal memuat perikop.');
+        }
+      });
+    </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -63,7 +79,6 @@
         </header>
 
         <main>
-            <!-- Kartu untuk ringkasan progres keseluruhan -->
             <section class="summary-card" id="overall-summary">
                 <h2>Progres Keseluruhan</h2>
                 <div class="progress-bar-container">
@@ -72,14 +87,11 @@
                 <p id="overall-progress-text">0% (0/1189 Pasal)</p>
             </section>
 
-            <!-- Pesan Loading -->
             <div id="loading-indicator">
                 <p>Memuat progres Anda...</p>
             </div>
 
-            <!-- Konten Utama yang akan ditampilkan setelah loading -->
             <div id="main-content" class="hidden">
-                <!-- Bagian Perjanjian Lama -->
                 <section class="testament-section">
                     <div class="collapsible active">
                         <h2>Perjanjian Lama</h2>
@@ -87,11 +99,9 @@
                         <span class="chevron"></span>
                     </div>
                     <div class="content show" id="old-testament-list">
-                        <!-- Daftar kitab Perjanjian Lama akan diisi oleh JavaScript -->
-                    </div>
+                        </div>
                 </section>
 
-                <!-- Bagian Perjanjian Baru -->
                 <section class="testament-section">
                     <div class="collapsible">
                         <h2>Perjanjian Baru</h2>
@@ -99,14 +109,12 @@
                         <span class="chevron"></span>
                     </div>
                     <div class="content" id="new-testament-list">
-                        <!-- Daftar kitab Perjanjian Baru akan diisi oleh JavaScript -->
-                    </div>
+                        </div>
                 </section>
             </div>
         </main>
     </div>
 
-    <!-- Template untuk setiap item kitab (disembunyikan) -->
     <div id="book-item-template" style="display: none;">
         <div class="book-item">
             <span class="book-name">Nama Kitab</span>
@@ -120,7 +128,6 @@
         </div>
     </div>
     
-    <!-- === BAGIAN BARU: MODAL UNTUK MENAMPILKAN PERIKOP === -->
     <div id="pericope-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="close-button">&times;</button>
@@ -145,9 +152,6 @@
             </div>
         </div>
     </div>
-    <!-- === AKHIR BAGIAN BARU === -->
-
-    <!-- Memuat file JavaScript -->
     <script src="script.js"></script>
 
 </body>
