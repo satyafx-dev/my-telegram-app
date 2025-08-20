@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Susun Khotbah • Theos Dashboard</title>
+  <title>Susun Khotbah • Theos</title>
   <style>
     :root{--bg:#f3f3f3;--text:#111;--muted:#6b7280;--card:#fff;--pri:#2481CC;--priText:#fff}
     *{box-sizing:border-box}
@@ -20,11 +20,8 @@
     @media(min-width:720px){.row.two{grid-template-columns:1fr 1fr}}
     .btnbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
     button{background:var(--pri);color:var(--priText);border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-    .btn{background:#e5e7eb;color:#111}
-    .ghost{background:transparent;border:1px solid #e5e7eb;color:#111}
     .ok{color:#10b981;font-weight:600}
     .err{color:#ef4444;font-weight:600}
-    pre{white-space:pre-wrap;background:#fafafa;border:1px solid #eee;border-radius:10px;padding:12px;min-height:140px}
     .small{font-size:12px;color:var(--muted)}
     .spin{display:inline-block;width:16px;height:16px;border:2px solid #d1d5db;border-top-color:#111;border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px}
     @keyframes sp{to{transform:rotate(360deg)}}
@@ -83,17 +80,8 @@
 
     <div class="btnbar">
       <button id="btnAI">Susun Khotbah (AI)</button>
-      <button class="btn" id="btnPreview">Preview</button>
-      <button class="btn" id="btnCopy">Salin</button>
-      <button class="ghost" id="btnSendWebhook">Kirim ke Theos Dashboard</button>
-      <button class="ghost" id="btnSendChat">Kirim ke Chat Telegram</button>
     </div>
     <p id="status"></p>
-  </div>
-
-  <div class="card">
-    <label>Naskah Khotbah</label>
-    <pre id="preview"></pre>
   </div>
 </div>
 
@@ -101,16 +89,16 @@
 <script>
   const tg = window.Telegram?.WebApp; tg?.ready();
   const user = tg?.initDataUnsafe?.user;
-  if(user?.first_name){ document.getElementById('hi').textContent = `Halo, ${user.first_name}. Masukkan minimal Tema, lalu klik “Susun Khotbah (AI)”.`; }
+  if(user?.first_name){ document.getElementById('hi').textContent = `Halo, ${user.first_name}. Masukkan minimal Tema, lalu klik tombol di bawah.`; }
 
   const el = id => document.getElementById(id);
-  const st = el('status'); const pv = el('preview');
+  const st = el('status');
 
   function status(msg, type='ok'){
     st.innerHTML = type==='ok' ? `<span class="ok">${msg}</span>` : `<span class="err">${msg}</span>`;
     if(type==='ok') tg?.HapticFeedback?.notificationOccurred('success');
     if(type!=='ok') tg?.HapticFeedback?.notificationOccurred('error');
-    setTimeout(()=>st.textContent='', 4500);
+    // Pesan status tidak hilang otomatis agar pengguna tahu proses selesai
   }
 
   function getForm(){
@@ -126,35 +114,20 @@
     };
   }
 
-  function composeFallback(){ // jika user ingin preview manual dulu
-    const f = getForm();
-    if(!f.tema) throw new Error('Tema wajib diisi.');
-    return `Judul: ${f.judul || f.tema}
-Tema: ${f.tema}
-Ayat Referensi: ${f.ayat || '-'}
-
-Pendahuluan:
-${f.pendahuluan || '-'}
-
-Isi:
-${f.poin || '-'}
-
-Aplikasi:
-${f.aplikasi || '-'}
-
-Penutup:
-${f.penutup || '-'}
-`;
-  }
-
-  // === AI Generate ===
+  // === Fungsi Utama AI Generate ===
   async function generateAI(){
     const f = getForm();
     if(!f.tema){ status('Tema wajib diisi.', 'err'); return; }
 
     const btn = el('btnAI');
     const old = btn.innerHTML; btn.disabled = true;
-    btn.innerHTML = `<span class="spin"></span>Menyusun khotbah…`;
+    btn.innerHTML = `<span class="spin"></span>Menyusun & mengirim…`;
+    
+    // Tampilkan MainButton Telegram dengan loading
+    if(tg?.MainButton){
+        tg.MainButton.showProgress();
+        tg.MainButton.disable();
+    }
 
     try{
       const payload = {
@@ -172,101 +145,36 @@ ${f.penutup || '-'}
         body: JSON.stringify(payload)
       });
 
-      if(!res.ok) throw new Error('Webhook tidak merespons 2xx.');
+      if(!res.ok) throw new Error(`Webhook merespons dengan status ${res.status}.`);
 
-      const data = await res.json();
-      /* ekspektasi balikan:
-        {
-          title: "…",
-          references: ["Ef 2:8-10","Rm 5:1-2", ...],
-          intro: "…",
-          body: "…",            // isi (poin-poin/eksposisi)
-          application: "…",
-          conclusion: "…",
-          sermon_markdown: "…(opsional, jika mau format md/HTML)"
-        }
-      */
+      // Karena naskah dikirim langsung ke chat, beri notifikasi sukses & tutup aplikasi.
+      status('Sukses! Naskah khotbah telah dikirim ke chat Anda.','ok');
+      
+      // Beri waktu 1.5 detik agar pengguna sempat baca pesan sukses, lalu tutup.
+      setTimeout(() => {
+        tg?.close();
+      }, 1500);
 
-      const naskah = data.sermon_markdown
-        || `Judul: ${data.title || f.judul || f.tema}
-Tema: ${f.tema}
-Ayat Referensi: ${(data.references && data.references.length)? data.references.join('; ') : (f.ayat || '-')}
-
-Pendahuluan:
-${data.intro || f.pendahuluan || '-'}
-
-Isi:
-${data.body || f.poin || '-'}
-
-Aplikasi:
-${data.application || f.aplikasi || '-'}
-
-Penutup:
-${data.conclusion || f.penutup || '-'}
-`;
-
-      pv.textContent = naskah;
-      status('Khotbah berhasil disusun ✔','ok');
     }catch(e){
       status('Gagal menyusun: '+e.message,'err');
     }finally{
       btn.disabled = false; btn.innerHTML = old;
+      if(tg?.MainButton){
+        tg.MainButton.hideProgress();
+        tg.MainButton.enable();
+      }
     }
   }
 
-  // === Preview manual (tanpa AI) ===
-  el('btnPreview').addEventListener('click', ()=>{
-    try{ pv.textContent = composeFallback(); }
-    catch(e){ status(e.message,'err'); }
-  });
+  // Hubungkan fungsi ke tombol
+  el('btnAI').addEventListener('click', generateAI);
 
-  // === Copy ===
-  el('btnCopy').addEventListener('click', async ()=>{
-    try{
-      const text = pv.textContent || composeFallback();
-      await navigator.clipboard.writeText(text);
-      status('Naskah disalin ke clipboard.','ok');
-    }catch(e){ status('Gagal menyalin.','err'); }
-  });
-
-  // === Kirim ke Dashboard (n8n) ===
-  el('btnSendWebhook').addEventListener('click', async ()=>{
-    try{
-      const text = pv.textContent || composeFallback();
-      const res = await fetch('https://theos-automata.com/webhook/0c67ca7d-7b72-493b-bab2-2025ffc559cb', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          type:'sermon_submit',
-          user_id: user?.id || null,
-          data:{ ...getForm(), naskah:text }
-        })
-      });
-      if(!res.ok) throw new Error('Webhook tidak merespons 2xx.');
-      status('Terkirim ke Theos Dashboard ✔','ok');
-    }catch(e){ status('Gagal kirim: '+e.message,'err'); }
-  });
-
-  // === Kirim ke chat Telegram (web_app_data) ===
-  el('btnSendChat').addEventListener('click', ()=>{
-    try{
-      const text = pv.textContent || composeFallback();
-      tg.sendData(JSON.stringify({
-        type:'sermon_preview',
-        user_id: user?.id || null,
-        naskah: text
-      }));
-      tg?.close(); // opsional
-    }catch(e){ status('Gagal kirim ke chat.','err'); }
-  });
-
-  // MainButton = jalur cepat AI
+  // Gunakan MainButton Telegram sebagai tombol utama
   if(tg){
-    tg.MainButton.setText('Susun Khotbah (AI)');
+    tg.MainButton.setText('Susun & Kirim Khotbah');
     tg.MainButton.onClick(()=>generateAI());
     tg.MainButton.show();
   }
-  el('btnAI').addEventListener('click', generateAI);
 </script>
 </body>
 </html>
