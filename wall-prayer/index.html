@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kirim Beban Doa & Kesaksian</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+        :root {
+            --primary-color: #007bff;
+            --background-color: #f4f7f9;
+            --form-background: #ffffff;
+            --text-color: #333;
+            --border-color: #dbe2e8;
+            --success-color: #28a745;
+            --error-color: #dc3545;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: var(--form-background);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-field,
+        .textarea-field {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-field:focus,
+        .textarea-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .textarea-field {
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 5px;
+        }
+
+        .radio-group label {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .radio-group input[type="radio"] {
+            display: none;
+        }
+
+        .radio-group input[type="radio"]:checked + label {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 2px 10px rgba(0, 123, 255, 0.2);
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-container label {
+            margin-bottom: 0;
+            font-weight: 400;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .submit-btn:disabled {
+            background-color: #a0c7ff;
+            cursor: not-allowed;
+        }
+        
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        #statusMessage {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+            display: none;
+        }
+
+        .success {
+            color: var(--success-color);
+        }
+
+        .error {
+            color: var(--error-color);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Formulir Doa & Kesaksian</h1>
+        <form id="submissionForm">
+            <div class="form-group">
+                <label>Jenis Pesan</label>
+                <div class="radio-group">
+                    <input type="radio" id="doa" name="jenis" value="Beban Doa" checked>
+                    <label for="doa">Beban Doa</label>
+
+                    <input type="radio" id="kesaksian" name="jenis" value="Kesaksian">
+                    <label for="kesaksian">Kesaksian</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="nama">Nama Anda</label>
+                <input type="text" id="nama" class="input-field" name="nama" placeholder="Masukkan nama Anda" required>
+                <div class="checkbox-container">
+                    <input type="checkbox" id="anonymous">
+                    <label for="anonymous">Kirim sebagai Anonim</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="pesan" id="pesanLabel">Isi Doa Anda</label>
+                <textarea id="pesan" class="textarea-field" name="pesan" placeholder="Tuliskan isi beban doa atau kesaksian Anda di sini..." required></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitButton">Kirim</button>
+
+            <p id="statusMessage"></p>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('submissionForm');
+        const submitButton = document.getElementById('submitButton');
+        const statusMessage = document.getElementById('statusMessage');
+        const anonymousCheckbox = document.getElementById('anonymous');
+        const nameInput = document.getElementById('nama');
+        const pesanLabel = document.getElementById('pesanLabel');
+        const radioButtons = document.querySelectorAll('input[name="jenis"]');
+        
+        // GANTI URL INI DENGAN URL BACKEND ANDA
+        const BACKEND_URL = 'https://URL_BACKEND_ANDA/api/kirim-pesan';
+
+        // Fungsi untuk menangani perubahan radio button
+        radioButtons.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'Beban Doa') {
+                    pesanLabel.textContent = 'Isi Doa Anda';
+                } else {
+                    pesanLabel.textContent = 'Isi Kesaksian Anda';
+                }
+            });
+        });
+
+        // Fungsi untuk menangani checkbox anonim
+        anonymousCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                nameInput.value = 'Anonim';
+                nameInput.disabled = true;
+                nameInput.style.backgroundColor = '#f0f0f0';
+            } else {
+                nameInput.value = '';
+                nameInput.disabled = false;
+                nameInput.style.backgroundColor = '#ffffff';
+                nameInput.placeholder = 'Masukkan nama Anda';
+            }
+        });
+
+        // Fungsi untuk menangani pengiriman form
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            submitButton.disabled = true;
+            submitButton.textContent = 'Mengirim...';
+            statusMessage.style.display = 'none';
+
+            const formData = {
+                jenis: form.elements.jenis.value,
+                nama: nameInput.value,
+                pesan: form.elements.pesan.value
+            };
+
+            try {
+                const response = await fetch(BACKEND_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                if (response.ok) {
+                    statusMessage.textContent = 'Pesan berhasil terkirim. Terima kasih!';
+                    statusMessage.className = 'success';
+                    form.reset();
+                    // Reset state anonim
+                    nameInput.disabled = false;
+                    nameInput.style.backgroundColor = '#ffffff';
+                    anonymousCheckbox.checked = false;
+
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Gagal mengirim pesan.');
+                }
+
+            } catch (error) {
+                statusMessage.textContent = 'Terjadi kesalahan: ' + error.message;
+                statusMessage.className = 'error';
+            } finally {
+                statusMessage.style.display = 'block';
+                submitButton.disabled = false;
+                submitButton.textContent = 'Kirim';
+            }
+        });
+    </script>
+</body>
+</html>
