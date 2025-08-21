@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- KONFIGURASI ---
     // GANTI DENGAN URL WEBHOOK N8N ANDA
-    const N8N_GET_USER_STATUS_URL = 'https://n8n.theos-automata.com/webhook/get-user-status';
+    const N8N_GET_USER_STATUS_URL = 'https://n8n.theos-automata.com/webhook/29345b64-6ed5-400f-904a-73b173633fca';
     const N8N_GET_BIBLE_JOURNEY_URL = 'https://n8n.theos-automata.com/webhook/bible-journey-pericope'; // Ganti jika URL berbeda
-    const N8N_GET_THEMATIC_JOURNEYS_URL = 'https://n8n.theos-automata.com/webhook/get-thematic-journeys'; // Buat webhook ini di n8n
+    const N8N_GET_THEMATIC_JOURNEYS_URL = 'https://n8n.theos-automata.com/webhook/5aaf51d1-993d-4e62-8830-8abfaccbc430'; // Buat webhook ini di n8n
 
     // Daftar kitab (bisa juga diambil dari API nanti)
     const OLD_TESTAMENT_BOOKS = [ "Kejadian", "Keluaran", "Imamat", "Bilangan", "Ulangan", /* ... sisanya */ ];
