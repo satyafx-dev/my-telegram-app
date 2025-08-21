@@ -96,15 +96,87 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNGSI UNTUK TAB PEMBACAAN URUT ---
     
     function renderBook(bookName, container) {
-        // ... (fungsi renderBook sama seperti sebelumnya) ...
+        const bookElement = bookTemplate.firstElementChild.cloneNode(true);
+        bookElement.dataset.book = bookName;
+        bookElement.querySelector('.book-name').textContent = bookName;
+        
+        bookElement.addEventListener('click', () => {
+            // Menggunakan data progres dari cache untuk mendapatkan urutan terakhir
+            const bookProgress = progressDataCache ? progressDataCache[bookName] : null;
+            const nextOrder = bookProgress ? bookProgress.read + 1 : null;
+            showPericope(bookName, nextOrder);
+        });
+
+        container.appendChild(bookElement);
+
     }
     
     async function fetchProgressData() {
-        // ... (fungsi fetchProgressData sama seperti sebelumnya) ...
+        loadingIndicator.classList.remove('hidden');
+        mainContent.classList.add('hidden');
+        await new Promise(resolve => setTimeout(resolve, 500)); 
+
+        try {
+            // GANTI DENGAN API PROGRES ANDA NANTI
+            console.warn("Menggunakan data progres dummy. Ganti dengan API Anda.");
+            const dummyData = {
+                "Kejadian": { "read": 50, "total": 78 }, "Keluaran": { "read": 23, "total": 69 },
+                "Matius": { "read": 28, "total": 28 }, "Markus": { "read": 10, "total": 16 },
+                "Wahyu": { "read": 1, "total": 22 }
+            };
+            progressDataCache = dummyData; // Simpan ke cache
+            return dummyData;
+        } catch (error) {
+            console.error("Error fetching progress data:", error);
+            tg.showAlert(error.message || 'Tidak dapat memuat progres.');
+            return {}; 
+        } finally {
+            loadingIndicator.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+        }
+
     }
 
     function updateUrutUI(progressData) {
-        // ... (fungsi updateUI diganti nama jadi updateUrutUI, isinya sama) ...
+                let totalReadPL = 0, totalChaptersPL = 0;
+        let totalReadPB = 0, totalChaptersPB = 0;
+
+        const allBooks = [...OLD_TESTAMENT_BOOKS, ...NEW_TESTAMENT_BOOKS];
+
+        allBooks.forEach(bookName => {
+            const bookProgress = progressData[bookName] || { read: 0, total: 0 };
+            const total = bookProgress.total || 1; 
+            const read = bookProgress.read || 0;
+            const percentage = Math.round((read / total) * 100) || 0;
+
+            const bookElement = document.querySelector(`.book-item[data-book="${bookName}"]`);
+            if (bookElement) {
+                bookElement.querySelector('.progress-bar').style.width = `${percentage}%`;
+                bookElement.querySelector('.progress-text').textContent = `${read}/${total}`;
+                bookElement.querySelector('.progress-percentage').textContent = `${percentage}%`;
+            }
+
+            if (OLD_TESTAMENT_BOOKS.includes(bookName)) {
+                totalReadPL += read;
+                totalChaptersPL += total;
+            } else {
+                totalReadPB += read;
+                totalChaptersPB += total;
+            }
+        });
+
+        const percentagePL = Math.round((totalReadPL / totalChaptersPL) * 100) || 0;
+        document.getElementById('pl-summary-text').textContent = `${percentagePL}% Selesai`;
+
+        const percentagePB = Math.round((totalReadPB / totalChaptersPB) * 100) || 0;
+        document.getElementById('pb-summary-text').textContent = `${percentagePB}% Selesai`;
+
+        const totalRead = totalReadPL + totalReadPB;
+        const totalChapters = totalChaptersPL + totalChaptersPB;
+        const overallPercentage = Math.round((totalRead / totalChapters) * 100) || 0;
+        document.getElementById('overall-progress-bar').style.width = `${overallPercentage}%`;
+        document.getElementById('overall-progress-text').textContent = `${overallPercentage}% (${totalRead}/${totalChapters} Pasal)`;
+
     }
 
     // --- FUNGSI BARU UNTUK TAB TEMATIK ---
