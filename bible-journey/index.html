@@ -9,65 +9,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-    <script>
-      // Inisialisasi Supabase Client (bisa tetap ada jika diperlukan untuk fitur lain)
-      const SUPABASE_URL = "https://dshbiniakqjjqksvywve.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRzaGJpbmlha3FqanFrc3Z5d3ZlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0MTk5MjcsImV4cCI6MjA2Nzk5NTkyN30.OmCSDnStSv8bucVxt7I54gV3DYA-20iFvBkcapTPLvM";
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {auth: { persistSession: false }});
-
-      // URL Webhook n8n Anda
-      const N8N_WEBHOOK_URL = 'https://n8n.theos-automata.com/webhook/bible-journey-pericope';
-
-      // Fungsi untuk mendapatkan User ID dari Telegram
-      function getUserId() {
-        try {
-          const tg = window.Telegram?.WebApp;
-          return tg?.initDataUnsafe?.user?.id?.toString() ?? 'guest';
-        } catch { return 'guest'; }
-      }
-      
-      // FUNGSI getPericope YANG SUDAH DIPERBAIKI
-      // Sekarang memanggil n8n, bukan lagi Supabase secara langsung.
-      async function getPericope({ book, order = null }) {
-        const response = await fetch(N8N_WEBHOOK_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            book: book, 
-            order: order, 
-            userID: getUserId() // Mengirim userID ke n8n
-          })
-        });
-
-        if (!response.ok) {
-          // Jika respons dari n8n tidak berhasil (misal: error 500, 404), lempar error.
-          throw new Error(`Gagal memuat perikop dari n8n. Status: ${response.status}`);
-        }
-        
-        // Mengembalikan data JSON dari n8n
-        return await response.json();
-      }
-
-      // Event listener untuk testing saat halaman dimuat
-      document.addEventListener('DOMContentLoaded', async () => {
-        try {
-          // Inisialisasi Telegram Web App agar bisa di-expand
-          const tg = window.Telegram?.WebApp;
-          if (tg) {
-            tg.expand();
-          }
-
-          // Test memanggil fungsi getPericope yang baru
-          const row = await getPericope({ book: 'Kejadian', order: null });
-          console.log('Perikop dari n8n:', row);
-        } catch (e) {
-          console.error('Gagal saat inisialisasi atau memuat perikop:', e);
-          alert('Gagal memuat perikop.');
-        }
-      });
-    </script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
@@ -78,73 +19,92 @@
             <p>Progres Pembacaan Alkitab Anda</p>
         </header>
 
-        <main>
-            <section class="summary-card" id="overall-summary">
-                <h2>Progres Keseluruhan</h2>
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="overall-progress-bar" style="width: 0%;"></div>
-                </div>
-                <p id="overall-progress-text">0% (0/1189 Pasal)</p>
-            </section>
+        <div class="tabs">
+            <button class="tab-button active" data-tab="urut">Pembacaan Urut</button>
+            <button class="tab-button" data-tab="tematik">Tematik</button>
+        </div>
 
-            <div id="loading-indicator">
-                <p>Memuat progres Anda...</p>
+        <main>
+            <div id="urut-content" class="tab-content active">
+                <section class="summary-card" id="overall-summary">
+                    <h2>Progres Keseluruhan</h2>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="overall-progress-bar" style="width: 0%;"></div>
+                    </div>
+                    <p id="overall-progress-text">0% (0/1189 Pasal)</p>
+                </section>
+
+                <div id="loading-indicator-urut">
+                    <p>Memuat progres Anda...</p>
+                </div>
+
+                <div id="main-content-urut" class="hidden">
+                    <section class="testament-section">
+                        <div class="collapsible active">
+                            <h2>Perjanjian Lama</h2>
+                            <span class="summary-text" id="pl-summary-text">0% Selesai</span>
+                            <span class="chevron"></span>
+                        </div>
+                        <div class="content show" id="old-testament-list"></div>
+                    </section>
+
+                    <section class="testament-section">
+                        <div class="collapsible">
+                            <h2>Perjanjian Baru</h2>
+                            <span class="summary-text" id="pb-summary-text">0% Selesai</span>
+                            <span class="chevron"></span>
+                        </div>
+                        <div class="content" id="new-testament-list"></div>
+                    </section>
+                </div>
             </div>
 
-            <div id="main-content" class="hidden">
-                <section class="testament-section">
-                    <div class="collapsible active">
-                        <h2>Perjanjian Lama</h2>
-                        <span class="summary-text" id="pl-summary-text">0% Selesai</span>
-                        <span class="chevron"></span>
+            <div id="tematik-content" class="tab-content">
+                <div id="loading-indicator-tematik" class="hidden">
+                    <p>Memuat perjalanan tematik...</p>
+                </div>
+                <div id="journey-list-container">
                     </div>
-                    <div class="content show" id="old-testament-list">
-                        </div>
-                </section>
-
-                <section class="testament-section">
-                    <div class="collapsible">
-                        <h2>Perjanjian Baru</h2>
-                        <span class="summary-text" id="pb-summary-text">0% Selesai</span>
-                        <span class="chevron"></span>
-                    </div>
-                    <div class="content" id="new-testament-list">
-                        </div>
-                </section>
             </div>
         </main>
     </div>
 
-    <div id="book-item-template" style="display: none;">
+    <div id="templates" style="display: none;">
         <div class="book-item">
             <span class="book-name">Nama Kitab</span>
             <div class="progress-details">
-                <div class="progress-bar-container">
-                    <div class="progress-bar"></div>
-                </div>
+                <div class="progress-bar-container"><div class="progress-bar"></div></div>
                 <span class="progress-text">0/0</span>
                 <span class="progress-percentage">0%</span>
             </div>
         </div>
+
+        <div class="journey-category">
+            <h2 class="category-title">Nama Kategori</h2>
+            <div class="journey-items"></div>
+        </div>
+        
+        <a href="#" class="journey-item">
+            <div class="journey-info">
+                <h3 class="journey-title">Judul Journey</h3>
+                <p class="journey-description">Deskripsi singkat journey.</p>
+            </div>
+            <div class="journey-progress">
+                <div class="progress-bar-container"><div class="progress-bar"></div></div>
+                <span class="progress-text">0/0 Hari</span>
+            </div>
+            <div class="journey-lock-icon">🔒</div>
+        </a>
     </div>
     
     <div id="pericope-modal" class="modal-overlay hidden">
         <div class="modal-content">
             <button class="close-button">&times;</button>
-            <div id="modal-loader" class="hidden">
-                <div class="spinner"></div>
-                <p>Memuat perikop...</p>
-            </div>
+            <div id="modal-loader" class="hidden"><div class="spinner"></div><p>Memuat perikop...</p></div>
             <div id="modal-body">
                 <h2 id="pericope-title">Judul Perikop</h2>
-                <div class="pericope-section">
-                    <h3>Makna Teologis</h3>
-                    <p id="pericope-theology"></p>
-                </div>
-                <div class="pericope-section">
-                    <h3>Renungan Aplikatif</h3>
-                    <p id="pericope-reflection"></p>
-                </div>
+                <div class="pericope-section"><h3>Makna Teologis</h3><p id="pericope-theology"></p></div>
+                <div class="pericope-section"><h3>Renungan Aplikatif</h3><p id="pericope-reflection"></p></div>
             </div>
             <div class="modal-navigation">
                 <button id="prev-button" class="nav-button">Sebelumnya</button>
@@ -152,6 +112,21 @@
             </div>
         </div>
     </div>
+
+    <div id="premium-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button class="close-button">&times;</button>
+            <h2>✨ Upgrade ke Theos Premium</h2>
+            <p class="modal-subtitle">Buka akses ke seluruh Theos Library untuk memperdalam pemahaman firman Tuhan.</p>
+            <ul>
+                <li>✅ Akses penuh ke semua perjalanan tematik.</li>
+                <li>✅ Modul studi mendalam yang terus bertambah.</li>
+                <li>✅ Mendukung pengembangan Theos Automata.</li>
+            </ul>
+            <button id="upgrade-button" class="nav-button full-width">Upgrade Sekarang</button>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 
 </body>
