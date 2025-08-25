@@ -10,10 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const N8N_GET_USER_STATUS_URL = 'https://n8n.theos-automata.com/webhook/29345b64-6ed5-400f-904a-73b173633fca';
     const N8N_GET_BIBLE_JOURNEY_URL = 'https://n8n.theos-automata.com/webhook/bible-journey-pericope'; // Ganti jika URL berbeda
     const N8N_GET_THEMATIC_JOURNEYS_URL = 'https://n8n.theos-automata.com/webhook/5aaf51d1-993d-4e62-8830-8abfaccbc430'; // Buat webhook ini di n8n
-
+    const N8N_GET_BIBLE_PROGRESS_URL = 'https://n8n.theos-automata.com/webhook/b0d6f4eb-ad01-49c1-b26c-84883cbae765';
+    
     // Daftar kitab (bisa juga diambil dari API nanti)
-    const OLD_TESTAMENT_BOOKS = [ "Kejadian", "Keluaran", "Imamat", "Bilangan", "Ulangan", /* ... sisanya */ ];
-    const NEW_TESTAMENT_BOOKS = [ "Matius", "Markus", "Lukas", "Yohanes", "Kisah Para Rasul", /* ... sisanya */ ];
+    const OLD_TESTAMENT_BOOKS = [ "Kejadian", "Keluaran", "Imamat", "Bilangan", "Ulangan", "Yosua", "Hakim-hakim", "Rut", "1 Samuel", "2 Samuel", "1 Raja-raja", "2 Raja-raja", "1 Tawarikh", "2 Tawarikh", "Ezra", "Nehemia", "Ester", "Ayub", "Mazmur", "Amsal", "Pengkhotbah", "Kidung Agung", "Yesaya", "Yeremia", "Ratapan", "Yehezkiel", "Daniel", "Hosea", "Yoel", "Amos", "Obaja", "Yunus", "Mikha", "Nahum", "Habakuk", "Zefanya", "Hagai", "Zakharia", "Maleakhi" ];
+    const NEW_TESTAMENT_BOOKS = [ "Matius", "Markus", "Lukas", "Yohanes", "Kisah Para Rasul", "Roma", "1 Korintus", "2 Korintus", "Galatia", "Efesus", "Filipi", "Kolose", "1 Tesalonika", "2 Tesalonika", "1 Timotius", "2 Timotius", "Titus", "Filemon", "Ibrani", "Yakobus", "1 Petrus", "2 Petrus", "1 Yohanes", "2 Yohanes", "3 Yohanes", "Yudas", "Wahyu" ];
 
     // === ELEMEN DOM ===
     // Tabs
@@ -112,30 +113,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     async function fetchProgressData() {
-        loadingIndicator.classList.remove('hidden');
-        mainContent.classList.add('hidden');
-        await new Promise(resolve => setTimeout(resolve, 500)); 
-
-        try {
-            // GANTI DENGAN API PROGRES ANDA NANTI
-            console.warn("Menggunakan data progres dummy. Ganti dengan API Anda.");
-            const dummyData = {
-                "Kejadian": { "read": 50, "total": 78 }, "Keluaran": { "read": 23, "total": 69 },
-                "Matius": { "read": 28, "total": 28 }, "Markus": { "read": 10, "total": 16 },
-                "Wahyu": { "read": 1, "total": 22 }
-            };
-            progressDataCache = dummyData; // Simpan ke cache
-            return dummyData;
-        } catch (error) {
-            console.error("Error fetching progress data:", error);
-            tg.showAlert(error.message || 'Tidak dapat memuat progres.');
-            return {}; 
-        } finally {
-            loadingIndicator.classList.add('hidden');
-            mainContent.classList.remove('hidden');
-        }
-
+    if (!user?.id) {
+        console.warn("User ID tidak ditemukan. Tidak dapat memuat progres.");
+        return {};
     }
+
+    loadingUrut.classList.remove('hidden');
+    mainContentUrut.classList.add('hidden');
+
+    try {
+        const response = await fetch(N8N_GET_BIBLE_PROGRESS_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // Mengirim user_id ke n8n
+            body: JSON.stringify({ userId: user.id })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API request failed with status ${response.status}`);
+        }
+        const progressData = await response.json();
+        progressDataCache = progressData; // Simpan ke cache
+        return progressData;
+    } catch (error) {
+        console.error("Error fetching progress data:", error);
+        tg.showAlert('Tidak dapat memuat progres Anda.');
+        return {};
+    } finally {
+        loadingUrut.classList.add('hidden');
+        mainContentUrut.classList.remove('hidden');
+    }
+}
 
     function updateUrutUI(progressData) {
                 let totalReadPL = 0, totalChaptersPL = 0;
