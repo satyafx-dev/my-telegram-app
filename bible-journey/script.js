@@ -94,6 +94,25 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /**
+ * Fungsi untuk membuat elemen collapsible (buka/tutup).
+ */
+function setupCollapsibles() {
+    const collapsibles = document.querySelectorAll('.collapsible');
+    collapsibles.forEach(collapsible => {
+        collapsible.addEventListener('click', function() {
+            // Toggle kelas 'active' pada tombol yang diklik
+            this.classList.toggle('active');
+
+            // Dapatkan elemen konten (yang berisi daftar kitab)
+            const content = this.nextElementSibling;
+
+            // Toggle kelas 'show' untuk menampilkan atau menyembunyikan konten
+            content.classList.toggle('show');
+        });
+    });
+}
+
     // --- FUNGSI UNTUK TAB PEMBACAAN URUT ---
     
     function renderBook(bookName, container) {
@@ -274,6 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     async function main() {
         setupTabs();
+        setupCollapsibles(); // <-- TAMBAHKAN PANGGILAN INI
         setupModals();
 
         // 1. Cek status pengguna terlebih dahulu
