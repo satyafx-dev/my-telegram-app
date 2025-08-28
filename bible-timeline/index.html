@@ -1,128 +1,197 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roadmap Alkitab Interaktif</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Roadmap Alkitab Interaktif</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Lato:wght@300;400&display=swap" rel="stylesheet"/>
 </head>
 <body>
+  <!-- Immersive background layers -->
+  <div id="scene-bg">
+    <div class="layer stars"></div>
+    <div class="layer rain"></div>
+    <div class="layer sand"></div>
+  </div>
 
-    <header>
-        <h1>Roadmap Alkitab Interaktif</h1>
-        <p>Jelajahi Garis Waktu Sejarah Penebusan</p>
-    </header>
+  <header>
+    <h1>Roadmap Alkitab Interaktif</h1>
+    <p>Jelajahi Garis Waktu Sejarah Penebusan</p>
+    <div class="controls">
+      <button id="toggle-immersive" aria-pressed="true">🌌 Mode Imersi: ON</button>
+      <button id="toggle-audio" aria-pressed="false">🔊 Suara: OFF</button>
+    </div>
+  </header>
 
-    <div class="timeline">
-        <div class="timeline-item" 
-             data-title="Era Penciptaan & Sejarah Awal"
-             data-image="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop"
-             data-description="Penciptaan alam semesta, kejatuhan manusia, air bah, dan awal mula peradaban."
-             data-scriptures="Kitab yang Merekam: <strong>Kejadian 1-11</strong>">
-            <h2>Era Penciptaan</h2>
-            <p>Sejarah Awal</p>
-        </div>
-
-        <div class="timeline-item"
-             data-title="Era Para Patriark"
-             data-image="https://images.unsplash.com/photo-1531643198656-7a716701b7a2?q=80&w=2070&auto=format&fit=crop"
-             data-description="Kisah para bapa leluhur bangsa Israel: Abraham, Ishak, Yakub, dan Yusuf. Allah membuat perjanjian-Nya yang kekal."
-             data-scriptures="Kitab yang Merekam: <strong>Kejadian 12-50</strong>">
-            <h2>Era Para Patriark</h2>
-            <p>~ 2100 – 1800 SM</p>
-        </div>
-        
-        <div class="timeline-item"
-             data-title="Era Keluaran & Padang Gurun"
-             data-image="https://images.unsplash.com/photo-1527782193246-59c168f1c82e?q=80&w=1974&auto=format&fit=crop"
-             data-description="Perbudakan di Mesir, panggilan Musa, penyeberangan Laut Merah, penerimaan Hukum Taurat di Gunung Sinai, dan 40 tahun perjalanan di padang gurun."
-             data-scriptures="Kitab yang Ditulis: <strong>Keluaran, Imamat, Bilangan, Ulangan</strong>">
-            <h2>Era Keluaran</h2>
-            <p>~ 1800 – 1406 SM</p>
-        </div>
-
-        <div class="timeline-item"
-             data-title="Era Penaklukan & Hakim-Hakim"
-             data-image="https://images.unsplash.com/photo-1621568225641-945206b0d998?q=80&w=1932&auto=format&fit=crop"
-             data-description="Yosua memimpin Israel masuk ke Tanah Perjanjian. Periode kepemimpinan para hakim seperti Gideon, Debora, dan Simson."
-             data-scriptures="Kitab yang Ditulis: <strong>Yosua, Hakim-hakim, Rut</strong>">
-            <h2>Era Hakim-Hakim</h2>
-            <p>~ 1406 – 1050 SM</p>
-        </div>
-
-        <div class="timeline-item"
-             data-title="Era Kerajaan Bersatu"
-             data-image="https://images.unsplash.com/photo-1605784903544-780b7e9b2575?q=80&w=1974&auto=format&fit=crop"
-             data-description="Pemerintahan tiga raja besar Israel: Saul, Daud (puncak kejayaan), dan Salomo (pembangunan Bait Suci pertama)."
-             data-scriptures="Kitab yang Ditulis: <strong>1&2 Samuel, Mazmur, Amsal, Kidung Agung</strong>">
-            <h2>Era Kerajaan Bersatu</h2>
-            <p>~ 1050 – 931 SM</p>
-        </div>
-
-        <div class="timeline-item"
-             data-title="Era Kerajaan Terpecah"
-             data-image="https://images.unsplash.com/photo-1614716232920-8110a12e16d4?q=80&w=1935&auto=format&fit=crop"
-             data-description="Kerajaan pecah menjadi Israel (Utara) dan Yehuda (Selatan). Pelayanan para nabi seperti Elia, Elisa, dan Yesaya. Israel jatuh ke tangan Asyur, Yehuda jatuh ke tangan Babel."
-             data-scriptures="Kitab yang Ditulis: <strong>1&2 Raja-raja, Yesaya, Yeremia, Hosea, Amos, dll.</strong>">
-            <h2>Era Kerajaan Terpecah</h2>
-            <p>931 – 586 SM</p>
-        </div>
-        
-        <div class="timeline-item"
-             data-title="Era Pembuangan di Babel"
-             data-image="https://images.unsplash.com/photo-1605221928690-a35653b64c12?q=80&w=1974&auto=format&fit=crop"
-             data-description="Bangsa Yehuda hidup dalam pengasingan di Babel. Pelayanan nabi Daniel dan Yehezkiel yang memberikan pengharapan."
-             data-scriptures="Kitab yang Ditulis: <strong>Ratapan, Yehezkiel, Daniel</strong>">
-            <h2>Era Pembuangan</h2>
-            <p>586 – 538 SM</p>
-        </div>
-
-        <div class="timeline-item"
-             data-title="Era Setelah Pembuangan"
-             data-image="https://images.unsplash.com/photo-1590214228373-356a4221b6a1?q=80&w=2070&auto=format&fit=crop"
-             data-description="Kembalinya bangsa Yahudi ke Yerusalem, pembangunan kembali Bait Suci dan tembok kota di bawah pimpinan Zerubabel, Ezra, dan Nehemia."
-             data-scriptures="Kitab yang Ditulis: <strong>Ezra, Nehemia, Ester, Hagai, Zakharia, Maleakhi</strong>">
-            <h2>Era Restorasi</h2>
-            <p>538 – 400 SM</p>
-        </div>
-
-        <div class="timeline-divider">
-            Masa Intertestamental (~400 Tahun)
-        </div>
-
-        <div class="timeline-item"
-             data-title="Kehidupan & Pelayanan Yesus Kristus"
-             data-image="https://images.unsplash.com/photo-1598495535564-904008d515a4?q=80&w=1974&auto=format&fit=crop"
-             data-description="Kelahiran, kehidupan, pengajaran, mukjizat, kematian di kayu salib, dan kebangkitan Sang Juruselamat, Yesus Kristus, sebagai puncak sejarah penebusan."
-             data-scriptures="Kitab yang Merekam: <strong>Matius, Markus, Lukas, Yohanes</strong>">
-            <h2>Kehidupan Yesus</h2>
-            <p>~ 4 SM – 33 M</p>
-        </div>
-
-        <div class="timeline-item"
-             data-title="Era Gereja Mula-Mula & Para Rasul"
-             data-image="https://images.unsplash.com/photo-1506813561337-3387363a2a6d?q=80&w=1974&auto=format&fit=crop"
-             data-description="Turunnya Roh Kudus di hari Pentakosta, penyebaran Injil oleh para rasul seperti Petrus dan Paulus ke seluruh dunia yang dikenal saat itu."
-             data-scriptures="Kitab yang Ditulis: <strong>Kisah Para Rasul, Surat-surat Paulus, Surat Umum, Wahyu</strong>">
-            <h2>Gereja Mula-Mula</h2>
-            <p>~ 33 M – 95 M</p>
-        </div>
+  <div class="timeline">
+    <!-- ERA 1 -->
+    <div class="timeline-item"
+      data-key="creation"
+      data-title="Era Penciptaan & Sejarah Awal"
+      data-image="https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop"
+      data-description="Penciptaan alam semesta, kejatuhan manusia, air bah, dan awal mula peradaban."
+      data-scriptures="Kejadian 1–11"
+      data-theme="stars"
+      data-audio="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5b8b7b3cdf.mp3?filename=ambient-space-110241.mp3">
+      <h2>Era Penciptaan</h2>
+      <p>Sejarah Awal</p>
     </div>
 
-    <div id="modal-container">
-        <div id="modal-content">
-            <span id="close-button">&times;</span>
-            <img id="modal-image" src="" alt="Ilustrasi Era">
-            <h2 id="modal-title"></h2>
-            <p id="modal-description"></p>
-            <hr>
-            <p id="modal-scriptures"></p>
-        </div>
+    <!-- ERA 2 -->
+    <div class="timeline-item"
+      data-key="patriarchs"
+      data-title="Era Para Patriark"
+      data-image="https://images.unsplash.com/photo-1531643198656-7a716701b7a2?q=80&w=2070&auto=format&fit=crop"
+      data-description="Abraham, Ishak, Yakub, Yusuf — perjanjian kekal Allah dan janji keturunan."
+      data-scriptures="Kejadian 12–50"
+      data-theme="sand"
+      data-audio="https://cdn.pixabay.com/download/audio/2021/10/26/audio_3a4a4c8b3a.mp3?filename=desert-wind-ambient-97856.mp3">
+      <h2>Era Para Patriark</h2>
+      <p>~ 2100 – 1800 SM</p>
     </div>
-    
-    <script src="script.js"></script>
+
+    <!-- ERA 3 -->
+    <div class="timeline-item"
+      data-key="exodus"
+      data-title="Era Keluaran & Padang Gurun"
+      data-image="https://images.unsplash.com/photo-1527782193246-59c168f1c82e?q=80&w=1974&auto=format&fit=crop"
+      data-description="Perbudakan Mesir, panggilan Musa, Laut Teberau, Taurat, 40 tahun di padang gurun."
+      data-scriptures="Keluaran, Imamat, Bilangan, Ulangan"
+      data-theme="sand"
+      data-audio="https://cdn.pixabay.com/download/audio/2022/03/15/audio_0a09a1d1f6.mp3?filename=desert-wind-110236.mp3">
+      <h2>Era Keluaran</h2>
+      <p>~ 1800 – 1406 SM</p>
+    </div>
+
+    <!-- ERA 4 -->
+    <div class="timeline-item"
+      data-key="judges"
+      data-title="Era Penaklukan & Hakim-Hakim"
+      data-image="https://images.unsplash.com/photo-1621568225641-945206b0d998?q=80&w=1932&auto=format&fit=crop"
+      data-description="Masuk Kanaan dipimpin Yosua; zaman hakim-hakim: Debora, Gideon, Simson."
+      data-scriptures="Yosua, Hakim-hakim, Rut"
+      data-theme="sand"
+      data-audio="https://cdn.pixabay.com/download/audio/2021/09/01/audio_9c8b1b63d6.mp3?filename=campfire-ambient-8999.mp3">
+      <h2>Era Hakim-Hakim</h2>
+      <p>~ 1406 – 1050 SM</p>
+    </div>
+
+    <!-- ERA 5 -->
+    <div class="timeline-item"
+      data-key="united-kingdom"
+      data-title="Era Kerajaan Bersatu"
+      data-image="https://images.unsplash.com/photo-1605784903544-780b7e9b2575?q=80&w=1974&auto=format&fit=crop"
+      data-description="Saul, Daud (puncak kejayaan), Salomo (Bait Suci I)."
+      data-scriptures="1–2 Samuel, Mazmur, Amsal, Kidung Agung"
+      data-theme="sand"
+      data-audio="https://cdn.pixabay.com/download/audio/2022/03/15/audio_6a0393c9e8.mp3?filename=ancient-choir-110239.mp3">
+      <h2>Era Kerajaan Bersatu</h2>
+      <p>~ 1050 – 931 SM</p>
+    </div>
+
+    <!-- ERA 6 -->
+    <div class="timeline-item"
+      data-key="divided-kingdom"
+      data-title="Era Kerajaan Terpecah"
+      data-image="https://images.unsplash.com/photo-1614716232920-8110a12e16d4?q=80&w=1935&auto=format&fit=crop"
+      data-description="Israel (Utara) & Yehuda (Selatan). Pelayanan nabi besar."
+      data-scriptures="1–2 Raja-raja; Yesaya, Yeremia, Hosea, Amos, dlsb."
+      data-theme="rain"
+      data-audio="https://cdn.pixabay.com/download/audio/2021/08/04/audio_6a0e7c1f24.mp3?filename=soft-rain-ambient-6403.mp3">
+      <h2>Era Kerajaan Terpecah</h2>
+      <p>931 – 586 SM</p>
+    </div>
+
+    <!-- ERA 7 -->
+    <div class="timeline-item"
+      data-key="exile"
+      data-title="Era Pembuangan di Babel"
+      data-image="https://images.unsplash.com/photo-1605221928690-a35653b64c12?q=80&w=1974&auto=format&fit=crop"
+      data-description="Yehuda di pengasingan; harapan melalui Daniel & Yehezkiel."
+      data-scriptures="Ratapan, Yehezkiel, Daniel"
+      data-theme="rain"
+      data-audio="https://cdn.pixabay.com/download/audio/2021/09/07/audio_7a6c3a0f99.mp3?filename=lonely-piano-ambient-9098.mp3">
+      <h2>Era Pembuangan</h2>
+      <p>586 – 538 SM</p>
+    </div>
+
+    <!-- ERA 8 -->
+    <div class="timeline-item"
+      data-key="restoration"
+      data-title="Era Setelah Pembuangan"
+      data-image="https://images.unsplash.com/photo-1590214228373-356a4221b6a1?q=80&w=2070&auto=format&fit=crop"
+      data-description="Pulang ke Yerusalem; Bait & tembok dibangun kembali."
+      data-scriptures="Ezra, Nehemia, Ester, Hagai, Zakharia, Maleakhi"
+      data-theme="sand"
+      data-audio="https://cdn.pixabay.com/download/audio/2022/03/15/audio_1b9cb2f1f8.mp3?filename=hopeful-ambient-110238.mp3">
+      <h2>Era Restorasi</h2>
+      <p>538 – 400 SM</p>
+    </div>
+
+    <div class="timeline-divider">Masa Intertestamental (~400 Tahun)</div>
+
+    <!-- ERA 9 -->
+    <div class="timeline-item"
+      data-key="jesus"
+      data-title="Kehidupan & Pelayanan Yesus Kristus"
+      data-image="https://images.unsplash.com/photo-1598495535564-904008d515a4?q=80&w=1974&auto=format&fit=crop"
+      data-description="Kelahiran, pelayanan, salib, kebangkitan — puncak sejarah penebusan."
+      data-scriptures="Matius, Markus, Lukas, Yohanes"
+      data-theme="stars"
+      data-audio="https://cdn.pixabay.com/download/audio/2022/03/15/audio_5a0f2c8f58.mp3?filename=light-choir-110237.mp3">
+      <h2>Kehidupan Yesus</h2>
+      <p>~ 4 SM – 33 M</p>
+    </div>
+
+    <!-- ERA 10 -->
+    <div class="timeline-item"
+      data-key="early-church"
+      data-title="Era Gereja Mula-Mula & Para Rasul"
+      data-image="https://images.unsplash.com/photo-1506813561337-3387363a2a6d?q=80&w=1974&auto=format&fit=crop"
+      data-description="Pentakosta; Injil menyebar melalui Petrus, Paulus, dan para rasul."
+      data-scriptures="Kisah Para Rasul, Surat-surat, Wahyu"
+      data-theme="stars"
+      data-audio="https://cdn.pixabay.com/download/audio/2022/02/23/audio_9a0a7f3b71.mp3?filename=ambient-warmth-ambient-10161.mp3">
+      <h2>Gereja Mula-Mula</h2>
+      <p>~ 33 – 95 M</p>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal-container" aria-hidden="true">
+    <div id="modal-content" role="dialog" aria-modal="true">
+      <span id="close-button" aria-label="Tutup">&times;</span>
+      <img id="modal-image" src="" alt="Ilustrasi Era"/>
+      <h2 id="modal-title"></h2>
+      <p id="modal-description"></p>
+
+      <div class="meta">
+        <div class="meta-box">
+          <h3>📜 Ayat Kunci</h3>
+          <div id="modal-verses"></div>
+        </div>
+        <div class="meta-box">
+          <h3>🏺 Sejarah & Konteks</h3>
+          <ul id="modal-history" class="history-list"></ul>
+        </div>
+      </div>
+
+      <hr/>
+      <p id="modal-scriptures"></p>
+
+      <div class="nav-row">
+        <button id="prev-era">◀ Era Sebelumnya</button>
+        <button id="next-era">Era Berikutnya ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ambient audio -->
+  <audio id="ambient" loop></audio>
+
+  <script src="script.js"></script>
 </body>
 </html>
