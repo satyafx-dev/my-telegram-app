@@ -29,7 +29,6 @@
             width: 100%;
             max-width: 500px;
             margin: 0 auto;
-            /* PENAMBAHAN: Padding bawah agar link tidak tertutup tombol */
             padding-bottom: 80px; 
         }
         h1 {
@@ -86,7 +85,6 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-        /* PENAMBAHAN: STYLE UNTUK FOOTER LINK */
         .footer-link {
             text-align: center;
             margin-top: 30px;
@@ -108,7 +106,7 @@
         <p id="welcome-text">Halo! Mohon lengkapi data di bawah ini.</p>
 
         <div id="registration-form" style="display: none;">
-           
+            
             <div class="form-group">
                 <label for="audience-select">Target Renungan</label>
                 <select id="audience-select">
@@ -136,10 +134,10 @@
                     <option value="">Memuat daftar gereja...</option>
                 </select>
             </div>
-           
+            
             <div id="error-message" class="error" style="display: none;"></div>
         </div>
-       
+        
         <div id="initial-loading" class="loading">
             <p>Mempersiapkan formulir...</p>
         </div>
@@ -149,156 +147,164 @@
                 <i class="fas fa-robot"></i> Jelajahi Ekosistem Theos Automata
             </a>
         </div>
-    </div>
+
+        <div class="footer-link" style="margin-top: 15px;">
+            <a href="donasi.html">
+                <i class="fas fa-heart"></i> Dukung Pengembangan Theos Automata
+            </a>
+        </div>
+        </div>
 
     <button id="main-button" disabled>Simpan Data</button>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
+        // ... Seluruh JavaScript Anda tetap sama, tidak perlu diubah ...
+        // (Saya tidak menampilkannya lagi di sini agar ringkas)
         const tg = window.Telegram.WebApp;
 
-        // ===================================================================
-        // PENTING: Ganti URL di bawah ini dengan URL Webhook PRODUKSI dari n8n!
-        // ===================================================================
-        const GET_CHURCHES_URL = "https://n8n.theos-automata.com/webhook/3c185c24-cdc0-470b-90c4-795fada76de3";
-       
-        //const GET_CHURCHES_URL = "https://ultimate-grateful-mustang.ngrok-free.app/webhook/3c185c24-cdc0-470b-90c4-795fada76de3";
-       
-        // URL untuk menyimpan data (buat webhook baru untuk ini)
-        const UPDATE_PROFILE_URL = "https://n8n.theos-automata.com/webhook/604ef313-ffd0-4894-9c6a-2019d26711a8";
-        //const UPDATE_PROFILE_URL = "https://ultimate-grateful-mustang.ngrok-free.app/webhook/604ef313-ffd0-4894-9c6a-2019d26711a8";
-       
+        // ===================================================================
+        // PENTING: Ganti URL di bawah ini dengan URL Webhook PRODUKSI dari n8n!
+        // ===================================================================
+        const GET_CHURCHES_URL = "https://n8n.theos-automata.com/webhook/3c185c24-cdc0-470b-90c4-795fada76de3";
+       
+        //const GET_CHURCHES_URL = "https://ultimate-grateful-mustang.ngrok-free.app/webhook/3c185c24-cdc0-470b-90c4-795fada76de3";
+       
+        // URL untuk menyimpan data (buat webhook baru untuk ini)
+        const UPDATE_PROFILE_URL = "https://n8n.theos-automata.com/webhook/604ef313-ffd0-4894-9c6a-2019d26711a8";
+        //const UPDATE_PROFILE_URL = "https://ultimate-grateful-mustang.ngrok-free.app/webhook/604ef313-ffd0-4894-9c6a-2019d26711a8";
+       
 
-        // Elemen UI
-        const welcomeText = document.getElementById('welcome-text');
-        const form = document.getElementById('registration-form');
-        const initialLoading = document.getElementById('initial-loading');
-        const churchSelect = document.getElementById('church-select');
-        const languageSelect = document.getElementById('language-select');
-        const audienceSelect = document.getElementById('audience-select'); // <-- PENAMBAHAN ELEMEN AUDIENS
-        const mainButton = document.getElementById('main-button');
-        const errorMessage = document.getElementById('error-message');
+        // Elemen UI
+        const welcomeText = document.getElementById('welcome-text');
+        const form = document.getElementById('registration-form');
+        const initialLoading = document.getElementById('initial-loading');
+        const churchSelect = document.getElementById('church-select');
+        const languageSelect = document.getElementById('language-select');
+        const audienceSelect = document.getElementById('audience-select'); // <-- PENAMBAHAN ELEMEN AUDIENS
+        const mainButton = document.getElementById('main-button');
+        const errorMessage = document.getElementById('error-message');
 
-        function showError(message) {
-            errorMessage.innerHTML = message;
-            errorMessage.style.display = 'block';
-            initialLoading.style.display = 'none';
-            form.style.display = 'block';
-            churchSelect.disabled = true;
-            mainButton.disabled = true;
-        }
+        function showError(message) {
+            errorMessage.innerHTML = message;
+            errorMessage.style.display = 'block';
+            initialLoading.style.display = 'none';
+            form.style.display = 'block';
+            churchSelect.disabled = true;
+            mainButton.disabled = true;
+        }
 
-        tg.ready();
-        tg.expand();
+        tg.ready();
+        tg.expand();
 
-        const user = tg.initDataUnsafe.user;
-        if (user && user.first_name) {
-            welcomeText.textContent = `Halo, ${user.first_name}! Mohon lengkapi data di bawah ini.`;
-        }
-       
-        async function fetchChurches() {
-            if (GET_CHURCHES_URL.includes("PASTE_YOUR_FULL_PRODUCTION_URL_HERE")) {
-                showError("<b>Kesalahan Konfigurasi.</b><br>URL untuk mengambil data gereja belum diatur.");
-                return;
-            }
+        const user = tg.initDataUnsafe.user;
+        if (user && user.first_name) {
+            welcomeText.textContent = `Halo, ${user.first_name}! Mohon lengkapi data di bawah ini.`;
+        }
+       
+        async function fetchChurches() {
+            if (GET_CHURCHES_URL.includes("PASTE_YOUR_FULL_PRODUCTION_URL_HERE")) {
+                showError("<b>Kesalahan Konfigurasi.</b><br>URL untuk mengambil data gereja belum diatur.");
+                return;
+            }
 
-            try {
-                const response = await fetch(GET_CHURCHES_URL);
-                if (!response.ok) {
-                    throw new Error(`Gagal mengambil data gereja. Status: ${response.status}`);
-                }
-                const raw = await response.json();
+            try {
+                const response = await fetch(GET_CHURCHES_URL);
+                if (!response.ok) {
+                    throw new Error(`Gagal mengambil data gereja. Status: ${response.status}`);
+                }
+                const raw = await response.json();
 
-                // Normalisasi: dukung array langsung, {data: [...]}, atau n8n items {json: {...}}
-                let churchesArray = [];
-                if (Array.isArray(raw)) {
-                    // Bisa array of plain objects atau array of {json:{...}}
-                    if (raw.length && raw[0] && raw[0].json) {
-                      churchesArray = raw.map(it => it.json);
-                    } else {
-                      churchesArray = raw;
-                    }
-                } else if (raw && Array.isArray(raw.data)) {
-                    churchesArray = raw.data;
-                } else {
-                    throw new Error("Format respons tidak valid untuk daftar gereja");
-                }
+                // Normalisasi: dukung array langsung, {data: [...]}, atau n8n items {json: {...}}
+                let churchesArray = [];
+                if (Array.isArray(raw)) {
+                    // Bisa array of plain objects atau array of {json:{...}}
+                    if (raw.length && raw[0] && raw[0].json) {
+                      churchesArray = raw.map(it => it.json);
+                    } else {
+                      churchesArray = raw;
+                    }
+                } else if (raw && Array.isArray(raw.data)) {
+                    churchesArray = raw.data;
+                } else {
+                    throw new Error("Format respons tidak valid untuk daftar gereja");
+                }
 
-                // Render
-                churchSelect.innerHTML = '<option value="">-- Pilih Gereja --</option>';
-                churchesArray.forEach(church => {
-                    const id   = church.id;
-                    const name = church.name ?? church.church_name ?? church.church ?? "(tanpa nama)";
-                    const city = church.city ?? church.city_name ?? church.regency_name ?? church.kota ?? "";
-                    const option = document.createElement('option');
-                    option.value = id;
-                    option.textContent = city ? `${name}, ${city}` : name;
-                    churchSelect.appendChild(option);
-                });
+                // Render
+                churchSelect.innerHTML = '<option value="">-- Pilih Gereja --</option>';
+                churchesArray.forEach(church => {
+                    const id   = church.id;
+                    const name = church.name ?? church.church_name ?? church.church ?? "(tanpa nama)";
+                    const city = church.city ?? church.city_name ?? church.regency_name ?? church.kota ?? "";
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = city ? `${name}, ${city}` : name;
+                    churchSelect.appendChild(option);
+                });
 
-                churchSelect.disabled = false;
-                mainButton.disabled = false;
-                initialLoading.style.display = 'none';
-                form.style.display = 'block';
+                churchSelect.disabled = false;
+                mainButton.disabled = false;
+                initialLoading.style.display = 'none';
+                form.style.display = 'block';
 
-            } catch (error) {
-                console.error("Error fetching churches:", error);
-                showError(`<b>Tidak dapat terhubung ke server.</b><br>Pastikan URL API sudah benar dan workflow API Anda aktif. <br><small>Detail: ${error.message}</small>`);
-            }
-        }
+            } catch (error) {
+                console.error("Error fetching churches:", error);
+                showError(`<b>Tidak dapat terhubung ke server.</b><br>Pastikan URL API sudah benar dan workflow API Anda aktif. <br><small>Detail: ${error.message}</small>`);
+            }
+        }
 
-        mainButton.addEventListener('click', async () => {
-            if (UPDATE_PROFILE_URL.includes("PASTE_URL_FOR_SAVING_DATA_HERE")) {
-                tg.showAlert("Kesalahan Konfigurasi: URL untuk menyimpan data belum diatur.");
-                return;
-            }
+        mainButton.addEventListener('click', async () => {
+            if (UPDATE_PROFILE_URL.includes("PASTE_URL_FOR_SAVING_DATA_HERE")) {
+                tg.showAlert("Kesalahan Konfigurasi: URL untuk menyimpan data belum diatur.");
+                return;
+            }
 
-            const selectedLanguage = languageSelect.value;
-            const selectedChurchId = churchSelect.value;
-            const selectedAudience = audienceSelect.value; // <-- MENGAMBIL NILAI AUDIENS
+            const selectedLanguage = languageSelect.value;
+            const selectedChurchId = churchSelect.value;
+            const selectedAudience = audienceSelect.value; // <-- MENGAMBIL NILAI AUDIENS
 
-            if (!selectedChurchId) {
-                tg.showAlert('Silakan pilih gereja Anda.');
-                return;
-            }
+            if (!selectedChurchId) {
+                tg.showAlert('Silakan pilih gereja Anda.');
+                return;
+            }
 
-            mainButton.disabled = true;
-            mainButton.textContent = 'Menyimpan...';
-            tg.MainButton.showProgress();
+            mainButton.disabled = true;
+            mainButton.textContent = 'Menyimpan...';
+            tg.MainButton.showProgress();
 
-            const dataToSend = {
-                chat_id: user.id,
-                user_id: user.id,
-                bahasa: selectedLanguage,
-                church_id: selectedChurchId,
-                audiens: selectedAudience, // <-- MENAMBAHKAN AUDIENS KE DATA YANG DIKIRIM
-                initData: tg.initData
-            };
+            const dataToSend = {
+                chat_id: user.id,
+                user_id: user.id,
+                bahasa: selectedLanguage,
+                church_id: selectedChurchId,
+                audiens: selectedAudience, // <-- MENAMBAHKAN AUDIENS KE DATA YANG DIKIRIM
+                initData: tg.initData
+            };
 
-            try {
-                const response = await fetch(UPDATE_PROFILE_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dataToSend),
-                });
+            try {
+                const response = await fetch(UPDATE_PROFILE_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dataToSend),
+                });
 
-                if (!response.ok) {
-                    throw new Error(`Gagal menyimpan data. Status: ${response.status}`);
-                }
+                if (!response.ok) {
+                    throw new Error(`Gagal menyimpan data. Status: ${response.status}`);
+                }
 
-                tg.sendData(JSON.stringify({ status: 'success', message: 'Profil berhasil diperbarui!' }));
-                tg.close();
+                tg.sendData(JSON.stringify({ status: 'success', message: 'Profil berhasil diperbarui!' }));
+                tg.close();
 
-            } catch (error) {
-                console.error("Error saving data:", error);
-                tg.showAlert(error.message);
-                mainButton.disabled = false;
-                mainButton.textContent = 'Simpan Data';
-                tg.MainButton.hideProgress();
-            }
-        });
+            } catch (error) {
+                console.error("Error saving data:", error);
+                tg.showAlert(error.message);
+                mainButton.disabled = false;
+                mainButton.textContent = 'Simpan Data';
+                tg.MainButton.hideProgress();
+            }
+        });
 
-        fetchChurches();
+        fetchChurches();
     </script>
 </body>
 </html>
