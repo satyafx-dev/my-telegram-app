@@ -157,7 +157,7 @@
         function updateNotarikonResult(hebrewText) { const notarikon = generateNotarikon(hebrewText); renderResult('notarikonResults', 'Huruf', notarikon.join(' &rarr; '), 'Memecah kata menjadi huruf-hurufnya.', 'notarikon', { original: hebrewText, letters: hebrewText }); }
 
         async function findAnalysis(payload) {
-            const webhookUrl = 'https://n8n.theos-automata.com/webhook/283586d0-5a4d-473f-aa87-83757e784bfe';
+            const webhookUrl = 'https://n8n.theos-automata.com/webhook/hermeneutika-analysis';
             const containerId = `${payload.type}AnalysisResult`;
             const analysisContainer = document.getElementById(containerId);
             analysisContainer.value = 'AI sedang menganalisis...';
