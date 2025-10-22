@@ -86,7 +86,7 @@
 
     <script>
         // --- DATABASE & CONFIG ---
-        const hebrewChars = { 'א': { val: 1, ord: 1, name: 'Aleph', milui: 111 }, 'ב': { val: 2, ord: 2, name: 'Bet', milui: 412 }, 'ג': { val: 3, ord: 3, name: 'Gimel', milui: 83 }, 'ד': { val: 4, ord: 4, name: 'Dalet', milui: 434 }, 'ה': { val: 5, ord: 5, name: 'He', milui: 15 }, 'ו': { val: 6, ord: 6, name: 'Vav', milui: 22 }, 'ז': { val: 7, ord: 7, name: 'Zayin', milui: 77 }, 'ח': { val: 8, ord: 8, name: 'Het', milui: 418 }, 'ט': { val: 9, ord: 9, name: 'Tet', milui: 419 }, 'י': { val: 10, ord: 10, name: 'Yud', milui: 20 }, 'כ': { val: 20, ord: 11, name: 'Kaf', milui: 100 }, 'ך': { val: 20, ord: 11, sofit: 500, name: 'Kaf Sofit', milui: 100 }, 'ל': { val: 30, ord: 12, name: 'Lamed', milui: 74 }, 'מ': { val: 40, ord: 13, name: 'Mem', milui: 80 }, 'ם': { val: 40, ord: 13, sofit: 600, name: 'Mem Sofit', milui: 80 }, 'ן': { val: 50, ord: 14, name: 'Nun', milui: 106 }, 'ן': { val: 50, ord: 14, sofit: 700, name: 'Nun Sofit', milui: 106 }, 'ס': { val: 60, ord: 15, name: 'Samekh', milui: 120 }, 'ע': { val: 70, ord: 16, name: 'Ayin', milui: 130 }, 'פ': { val: 80, ord: 17, name: 'Pe', milui: 81 }, 'ף': { val: 80, ord: 17, sofit: 800, name: 'Pe Sofit', milui: 81 }, 'צ': { val: 90, ord: 18, name: 'Tzadi', milui: 104 }, 'ץ': { val: 90, ord: 18, sofit: 900, name: 'Tzadi Sofit', milui: 104 }, 'ק': { val: 100, ord: 19, name: 'Kuf', milui: 186 }, 'ר': { val: 200, ord: 20, name: 'Resh', milui: 510 }, 'ש': { val: 300, ord: 21, name: 'Shin', milui: 360 }, 'ת': { val: 400, ord: 22, name: 'Tav', milui: 406 } };
+        const hebrewChars = { 'א': { val: 1, ord: 1, name: 'Aleph', milui: 111 }, 'ב': { val: 2, ord: 2, name: 'Bet', milui: 412 }, 'ג': { val: 3, ord: 3, name: 'Gimel', milui: 83 }, 'ד': { val: 4, ord: 4, name: 'Dalet', milui: 434 }, 'ה': { val: 5, ord: 5, name: 'He', milui: 15 }, 'ו': { val: 6, ord: 6, name: 'Vav', milui: 22 }, 'ז': { val: 7, ord: 7, name: 'Zayin', milui: 77 }, 'ח': { val: 8, ord: 8, name: 'Het', milui: 418 }, 'ט': { val: 9, ord: 9, name: 'Tet', milui: 419 }, 'י': { val: 10, ord: 10, name: 'Yud', milui: 20 }, 'כ': { val: 20, ord: 11, name: 'Kaf', milui: 100 }, 'ך': { val: 20, ord: 11, sofit: 500, name: 'Kaf Sofit', milui: 100 }, 'ל': { val: 30, ord: 12, name: 'Lamed', milui: 74 }, 'מ': { val: 40, ord: 13, name: 'Mem', milui: 80 }, 'ם': { val: 40, ord: 13, sofit: 600, name: 'Mem Sofit', milui: 80 }, 'נ': { val: 50, ord: 14, name: 'Nun', milui: 106 }, 'ן': { val: 50, ord: 14, sofit: 700, name: 'Nun Sofit', milui: 106 }, 'ס': { val: 60, ord: 15, name: 'Samekh', milui: 120 }, 'ע': { val: 70, ord: 16, name: 'Ayin', milui: 130 }, 'פ': { val: 80, ord: 17, name: 'Pe', milui: 81 }, 'ף': { val: 80, ord: 17, sofit: 800, name: 'Pe Sofit', milui: 81 }, 'צ': { val: 90, ord: 18, name: 'Tzadi', milui: 104 }, 'ץ': { val: 90, ord: 18, sofit: 900, name: 'Tzadi Sofit', milui: 104 }, 'ק': { val: 100, ord: 19, name: 'Kuf', milui: 186 }, 'ר': { val: 200, ord: 20, name: 'Resh', milui: 510 }, 'ש': { val: 300, ord: 21, name: 'Shin', milui: 360 }, 'ת': { val: 400, ord: 22, name: 'Tav', milui: 406 } };
         const greekChars = { 'α': 1, 'β': 2, 'γ': 3, 'δ': 4, 'ε': 5, 'ζ': 7, 'η': 8, 'θ': 9, 'ι': 10, 'κ': 20, 'λ': 30, 'μ': 40, 'ν': 50, 'ξ': 60, 'ο': 70, 'π': 80, 'ρ': 100, 'σ': 200, 'ς': 200, 'τ': 300, 'υ': 400, 'φ': 500, 'χ': 600, 'ψ': 700, 'ω': 800 };
         const theologicalDictionary = { 'elohim': { hebrew: 'אלהים', greek: 'θεος' }, 'yahweh': { hebrew: 'יהוה' }, 'yhwh': { hebrew: 'יהוה' }, 'adonai': { hebrew: 'אדני' }, 'yeshua': { hebrew: 'ישוע', greek: 'ιησους' }, 'jesus': { hebrew: 'ישוע', greek: 'ιησους' }, 'mashiach': { hebrew: 'משיח', greek: 'χριστος' }, 'messiah': { hebrew: 'משיח', greek: 'χριστος' }, 'christ': { hebrew: 'משיח', greek: 'χριστος' }, 'ruach': { hebrew: 'רוח', greek: 'πνευμα' }, 'sheol': { hebrew: 'שאול', greek: 'αδης' }, 'torah': { hebrew: 'תורה', greek: 'νομος' }, 'amen': { hebrew: 'אמן', greek: 'αμην' }, 'shalom': { hebrew: 'שלום', greek: 'ειρηνη' }, 'aletheia': { greek: 'αληθεια' }, 'logos': { greek: 'λογος' }, 'agape': { greek: 'αγαπη' }, 'pneuma': { greek: 'πνευμα' }, 'hades': { greek: 'αδης' }, };
         const translitHebrewMap = { 'tz': 'צ', 'ts': 'צ', 'ch': 'ח', 'kh': 'כ', 'sh': 'ש', 'a': 'א', 'b': 'ב', 'g': 'ג', 'd': 'ד', 'h': 'ה', 'v': 'ו', 'w': 'ו', 'u': 'ו', 'o': 'ו', 'z': 'ז', 't': 'ט', 'y': 'י', 'i': 'י', 'e': 'י', 'k': 'ק', 'l': 'ל', 'm': 'מ', 'n': 'נ', 's': 'ס', "'": 'ע', 'p': 'פ', 'f': 'פ', 'q': 'ק', 'r': 'ר', 'th': 'ת' };
@@ -151,59 +151,60 @@
             if (hebrewInput) { updateGematriaResult(hebrewInput); updateCipherResult(hebrewInput); updateNotarikonResult(hebrewInput); }
             if (greekInput) { updateIsopsephyResult(greekInput); }
         }
-        function updateGematriaResult(hebrewText) { const method = document.getElementById('gematriaMethod').value; const allValues = calculateGematria(hebrewText); const methodMap = { hechrechi: { label: 'Mispar Hechrechi', value: allValues.hechrechi, tip: 'Nilai standar/absolut.' }, siduri: { label: 'Mispar Siduri', value: allValues.siduri, tip: 'Nilai berdasarkan urutan alfabet (1-22).' }, katan: { label: 'Mispar Katan', value: allValues.katan, tip: 'Setiap huruf direduksi jadi 1 digit (nol dihilangkan).' }, katanMispari: { label: 'Mispar Katan Mispari', value: allValues.katanMispari, tip: 'Total nilai standar direduksi jadi 1 digit.' }, gadol: { label: 'Mispar Gadol', value: allValues.gadol, tip: 'Memperhitungkan nilai khusus huruf akhir (sofit).' }, milui: { label: 'Milui (Isian)', value: allValues.milui, tip: 'Nilai dari pengejaan penuh nama setiap huruf.' } }; const selected = methodMap[method]; if (selected) renderResult('gematriaSingleResult', selected.label, selected.value, selected.tip, 'gematria', { value: selected.value, method: method, methodLabel: selected.label, word: hebrewText }); }
+        function updateGematriaResult(hebrewText) { const method = document.getElementById('gematriaMethod').value; const allValues = calculateGematria(hebrewText); const methodMap = { hechrechi: { label: 'Mispar Hechrechi', value: allValues.hechrechi, tip: 'Nilai standar/absolut.' }, siduri: { label: 'Mispar Siduri', value: allValues.siduri, tip: 'Nilai berdasarkan urutan alfabet (1-22).' }, katan: { label: 'Mispar Katan', value: allValues.katan, tip: 'Setiap huruf direduksi jadi 1 digit (nol dihilangkan).' }, katanMispari: { label: 'Mispar Katan Mispari', value: allValues.katanMispari, tip: 'Total nilai standar direduksi jadi 1 digit.' }, gadol: { label: 'Mispar Gadol', value: allValues.gadol, tip: 'Memperhitungkan nilai khusus huruf akhir (sofit).' }, milui: { label: 'Milui (Isian)', value: allValues.milui, tip: 'Nilai dari pengejaan penuh nama setiap huruf.' } }; const selected = methodMap[method]; if (selected) renderResult('gematriaSingleResult', selected.label, selected.value, selected.tip, 'gematria', { value: selected.value, word: hebrewText, language: 'Ibrani' }); }
         function updateIsopsephyResult(greekText) { const value = calculateIsopsephy(greekText); renderResult('isopsephySingleResult', 'Nilai Isopsephy', value, 'Nilai numerik standar untuk alfabet Yunani.', 'isopsephy', { value: value, word: greekText }); }
         function updateCipherResult(hebrewText) { const method = document.getElementById('cipherMethod').value; const transformedText = transformCipher(hebrewText, method); const methodMap = { atbash: { label: 'Atbash', tip: 'Huruf pertama ditukar dengan terakhir (A↔Z).' }, albam: { label: 'Albam', tip: 'Paruh pertama alfabet ditukar dengan paruh kedua (A↔L).' }, atbah: { label: 'Atbah', tip: 'Sistem substitusi spesifik (A↔T, B↔H, dst).' }, achbi: { label: 'Achbi', tip: 'Sistem substitusi spesifik lainnya (A↔K, B↔L, dst).' }, avgad: { label: 'Avgad', tip: 'Mengganti huruf dengan huruf berikutnya (A→B).' } }; const selected = methodMap[method]; if (selected) renderResult('cipherSingleResult', selected.label, transformedText, selected.tip, 'cipher', { original: hebrewText, transformed: transformedText, method: selected.label }); }
-        function updateNotarikonResult(hebrewText) { const notarikon = generateNotarikon(hebrewText); renderResult('notarikonResults', 'Huruf', notarikon.join(' &rarr; '), 'Memecah kata menjadi huruf-hurufnya.', 'notarikon', { original: hebrewText, letters: hebrewText }); }
+        function updateNotarikonResult(hebrewText) { const notarikon = generateNotarikon(hebrewText); renderResult('notarikonResults', 'Huruf', notarikon.join(' → '), 'Memecah kata menjadi huruf-hurufnya.', 'notarikon', { original: hebrewText, letters: hebrewText }); }
 
-async function findAnalysis(payload) {
-    const webhookUrl = 'https://n8n.theos-automata.com/webhook/283586d0-5a4d-473f-aa87-83757e784bfe';
-    const containerId = `${payload.type}AnalysisResult`;
-    const analysisContainer = document.getElementById(containerId);
-    analysisContainer.value = 'AI sedang menganalisis...';
-    analysisContainer.classList.remove('hidden');
+        async function findAnalysis(payload) {
+            const webhookUrl = 'https://n8n.theos-automata.com/webhook/hermeneutika-analysis';
+            const containerId = `${payload.type}AnalysisResult`;
+            const analysisContainer = document.getElementById(containerId);
+            analysisContainer.value = 'AI sedang menganalisis...';
+            analysisContainer.classList.remove('hidden');
 
-    try {
-        const response = await fetch(webhookUrl, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(payload) 
-        });
-        
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        
-        // Langsung parse JSON response dari n8n
-        const data = await response.json();
+            try {
+                const response = await fetch(webhookUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+                
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                // Langsung parse JSON response dari n8n
+                const data = await response.json();
 
-        let resultText = '';
-        
-        // Check if data is array (n8n returns array of items)
-        const item = Array.isArray(data) ? data[0] : data;
-        
-        if (item.equivalences && item.equivalences.length > 0) {
-            resultText += '📚 Padanan Ditemukan:\n\n';
-            item.equivalences.forEach((entry, index) => {
-                resultText += `${index + 1}. ${entry.word}\n`;
-                resultText += `   📖 ${entry.transliteration || ''}\n`;
-                resultText += `   💡 ${entry.meaning}\n`;
-                if (entry.reference) {
-                    resultText += `   📜 ${entry.reference}\n`;
+                let resultText = '';
+                
+                // Check if data is array (n8n returns array of items)
+                const item = Array.isArray(data) ? data[0] : data;
+                
+                if (item.equivalences && item.equivalences.length > 0) {
+                    resultText += '📚 Padanan Ditemukan:\n\n';
+                    item.equivalences.forEach((entry, index) => {
+                        resultText += `${index + 1}. ${entry.word}\n`;
+                        resultText += `   📖 ${entry.transliteration || ''}\n`;
+                        resultText += `   💡 ${entry.meaning}\n`;
+                        if (entry.reference) {
+                            resultText += `   📜 ${entry.reference}\n`;
+                        }
+                        resultText += '\n';
+                    });
                 }
-                resultText += '\n';
-            });
+                
+                if (item.analysis) {
+                    resultText += '🔍 Analisis Teologis:\n\n';
+                    resultText += item.analysis;
+                }
+                
+                analysisContainer.value = resultText.trim() !== '' ? resultText : 'Tidak ada analisis yang ditemukan.';
+            } catch (error) {
+                console.error('Error fetching analysis:', error);
+                analysisContainer.value = `❌ Gagal memuat analisis AI.\n\nError: ${error.message}\n\nSilakan coba lagi atau periksa koneksi internet Anda.`;
+            }
         }
-        
-        if (item.analysis) {
-            resultText += '🔍 Analisis Teologis:\n\n';
-            resultText += item.analysis;
-        }
-        
-        analysisContainer.value = resultText.trim() !== '' ? resultText : 'Tidak ada analisis yang ditemukan.';
-    } catch (error) {
-        console.error('Error fetching analysis:', error);
-        analysisContainer.value = `❌ Gagal memuat analisis AI.\n\nError: ${error.message}\n\nSilakan coba lagi atau periksa koneksi internet Anda.`;
-    }
-}
+
         // --- EVENT HANDLERS ---
         const mainInput = document.getElementById('mainInput');
         mainInput.addEventListener('input', () => updateAllCalculations(mainInput.value));
