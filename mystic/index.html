@@ -156,45 +156,54 @@
         function updateCipherResult(hebrewText) { const method = document.getElementById('cipherMethod').value; const transformedText = transformCipher(hebrewText, method); const methodMap = { atbash: { label: 'Atbash', tip: 'Huruf pertama ditukar dengan terakhir (A↔Z).' }, albam: { label: 'Albam', tip: 'Paruh pertama alfabet ditukar dengan paruh kedua (A↔L).' }, atbah: { label: 'Atbah', tip: 'Sistem substitusi spesifik (A↔T, B↔H, dst).' }, achbi: { label: 'Achbi', tip: 'Sistem substitusi spesifik lainnya (A↔K, B↔L, dst).' }, avgad: { label: 'Avgad', tip: 'Mengganti huruf dengan huruf berikutnya (A→B).' } }; const selected = methodMap[method]; if (selected) renderResult('cipherSingleResult', selected.label, transformedText, selected.tip, 'cipher', { original: hebrewText, transformed: transformedText, method: selected.label }); }
         function updateNotarikonResult(hebrewText) { const notarikon = generateNotarikon(hebrewText); renderResult('notarikonResults', 'Huruf', notarikon.join(' &rarr; '), 'Memecah kata menjadi huruf-hurufnya.', 'notarikon', { original: hebrewText, letters: hebrewText }); }
 
-        async function findAnalysis(payload) {
-            const webhookUrl = 'https://n8n.theos-automata.com/webhook/hermeneutika-analysis';
-            const containerId = `${payload.type}AnalysisResult`;
-            const analysisContainer = document.getElementById(containerId);
-            analysisContainer.value = 'AI sedang menganalisis...';
-            analysisContainer.classList.remove('hidden');
+async function findAnalysis(payload) {
+    const webhookUrl = 'https://n8n.theos-automata.com/webhook/283586d0-5a4d-473f-aa87-83757e784bfe';
+    const containerId = `${payload.type}AnalysisResult`;
+    const analysisContainer = document.getElementById(containerId);
+    analysisContainer.value = 'AI sedang menganalisis...';
+    analysisContainer.classList.remove('hidden');
 
-            try {
-                const response = await fetch(webhookUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                const rawData = await response.json();
-                let data;
-                if (rawData.output && typeof rawData.output === 'string') {
-                    data = JSON.parse(rawData.output);
-                } else {
-                    data = rawData;
-                }
+    try {
+        const response = await fetch(webhookUrl, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify(payload) 
+        });
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        // Langsung parse JSON response dari n8n
+        const data = await response.json();
 
-                let resultText = '';
-                if (data.equivalences && data.equivalences.length > 0) {
-                    resultText += 'Padanan Ditemukan:\n';
-                    data.equivalences.forEach(item => {
-                        resultText += `- ${item.word} (${item.meaning})\n`;
-                    });
-                    resultText += '\n';
+        let resultText = '';
+        
+        // Check if data is array (n8n returns array of items)
+        const item = Array.isArray(data) ? data[0] : data;
+        
+        if (item.equivalences && item.equivalences.length > 0) {
+            resultText += '📚 Padanan Ditemukan:\n\n';
+            item.equivalences.forEach((entry, index) => {
+                resultText += `${index + 1}. ${entry.word}\n`;
+                resultText += `   📖 ${entry.transliteration || ''}\n`;
+                resultText += `   💡 ${entry.meaning}\n`;
+                if (entry.reference) {
+                    resultText += `   📜 ${entry.reference}\n`;
                 }
-                if (data.analysis) {
-                    resultText += 'Analisis Teologis AI:\n';
-                    resultText += data.analysis;
-                }
-                
-                analysisContainer.value = resultText.trim() !== '' ? resultText : 'Tidak ada analisis yang ditemukan.';
-            } catch (error) {
-                console.error('Error fetching analysis:', error);
-                analysisContainer.value = `Gagal memproses jawaban AI. Periksa format output di n8n.\n\nError: ${error.message}`;
-            }
+                resultText += '\n';
+            });
         }
-
+        
+        if (item.analysis) {
+            resultText += '🔍 Analisis Teologis:\n\n';
+            resultText += item.analysis;
+        }
+        
+        analysisContainer.value = resultText.trim() !== '' ? resultText : 'Tidak ada analisis yang ditemukan.';
+    } catch (error) {
+        console.error('Error fetching analysis:', error);
+        analysisContainer.value = `❌ Gagal memuat analisis AI.\n\nError: ${error.message}\n\nSilakan coba lagi atau periksa koneksi internet Anda.`;
+    }
+}
         // --- EVENT HANDLERS ---
         const mainInput = document.getElementById('mainInput');
         mainInput.addEventListener('input', () => updateAllCalculations(mainInput.value));
