@@ -156,52 +156,54 @@
         function updateCipherResult(hebrewText) { const method = document.getElementById('cipherMethod').value; const transformedText = transformCipher(hebrewText, method); const methodMap = { atbash: { label: 'Atbash', tip: 'Huruf pertama ditukar dengan terakhir (A↔Z).' }, albam: { label: 'Albam', tip: 'Paruh pertama alfabet ditukar dengan paruh kedua (A↔L).' }, atbah: { label: 'Atbah', tip: 'Sistem substitusi spesifik (A↔T, B↔H, dst).' }, achbi: { label: 'Achbi', tip: 'Sistem substitusi spesifik lainnya (A↔K, B↔L, dst).' }, avgad: { label: 'Avgad', tip: 'Mengganti huruf dengan huruf berikutnya (A→B).' } }; const selected = methodMap[method]; if (selected) renderResult('cipherSingleResult', selected.label, transformedText, selected.tip, 'cipher', { original: hebrewText, transformed: transformedText, method: selected.label }); }
         function updateNotarikonResult(hebrewText) { const notarikon = generateNotarikon(hebrewText); renderResult('notarikonResults', 'Huruf', notarikon.join(' → '), 'Memecah kata menjadi huruf-hurufnya.', 'notarikon', { original: hebrewText, letters: hebrewText }); }
 
+        // GANTI FUNGSI LAMA DENGAN INI
         async function findAnalysis(payload) {
             const webhookUrl = 'https://n8n.theos-automata.com/webhook/hermeneutika-analysis';
             const containerId = `${payload.type}AnalysisResult`;
             const analysisContainer = document.getElementById(containerId);
-            analysisContainer.value = 'AI sedang menganalisis...';
+            analysisContainer.value = 'AI sedang menganalisis... (Mengirim permintaan...)';
             analysisContainer.classList.remove('hidden');
 
             try {
+                // 1. Dapatkan Chat ID dari Telegram SDK
+                // Pastikan Telegram Web App SDK sudah di-load
+                if (typeof window.Telegram === 'undefined' || !window.Telegram.WebApp.initDataUnsafe.user) {
+                    throw new Error("Gagal memuat data pengguna Telegram.");
+                }
+                const chat_id = window.Telegram.WebApp.initDataUnsafe.user.id;
+                
+                if (!chat_id) {
+                    throw new Error("Tidak dapat menemukan Chat ID pengguna.");
+                }
+
+                // 2. Gabungkan payload asli dengan chat_id
+                const finalPayload = {
+                    ...payload,
+                    chat_id: chat_id 
+                };
+                
+                // 3. Kirim ke n8n
                 const response = await fetch(webhookUrl, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(payload) 
+                    body: JSON.stringify(finalPayload) 
                 });
                 
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 
-                // Langsung parse JSON response dari n8n
-                const data = await response.json();
+                // 4. Dapatkan respons instan (BUKAN HASIL GEMINI)
+                // Ini adalah JSON dari node "Respond to Webhook" Anda
+                const data = await response.json(); 
+                
+                // 5. Tampilkan pesan konfirmasi di web app
+                // Item 'data' mungkin terbungkus array oleh n8n
+                const responseMsg = Array.isArray(data) ? data[0].message : data.message;
+                
+                analysisContainer.value = `✅ Permintaan terkirim.\n\n${responseMsg || 'Anda akan menerima hasil di chat Telegram.'}`;
 
-                let resultText = '';
-                
-                // Check if data is array (n8n returns array of items)
-                const item = Array.isArray(data) ? data[0] : data;
-                
-                if (item.equivalences && item.equivalences.length > 0) {
-                    resultText += '📚 Padanan Ditemukan:\n\n';
-                    item.equivalences.forEach((entry, index) => {
-                        resultText += `${index + 1}. ${entry.word}\n`;
-                        resultText += `   📖 ${entry.transliteration || ''}\n`;
-                        resultText += `   💡 ${entry.meaning}\n`;
-                        if (entry.reference) {
-                            resultText += `   📜 ${entry.reference}\n`;
-                        }
-                        resultText += '\n';
-                    });
-                }
-                
-                if (item.analysis) {
-                    resultText += '🔍 Analisis Teologis:\n\n';
-                    resultText += item.analysis;
-                }
-                
-                analysisContainer.value = resultText.trim() !== '' ? resultText : 'Tidak ada analisis yang ditemukan.';
             } catch (error) {
                 console.error('Error fetching analysis:', error);
-                analysisContainer.value = `❌ Gagal memuat analisis AI.\n\nError: ${error.message}\n\nSilakan coba lagi atau periksa koneksi internet Anda.`;
+                analysisContainer.value = `❌ Gagal mengirim permintaan.\n\nError: ${error.message}\n\nPastikan Anda membuka ini dari dalam Telegram.`;
             }
         }
 
