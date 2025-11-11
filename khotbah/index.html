@@ -1,292 +1,180 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Susun Khotbah • Theos</title>
-  <style>
-    :root{--bg:#f3f3f3;--text:#111;--muted:#6b7280;--card:#fff;--pri:#2481CC;--priText:#fff}
-    *{box-sizing:border-box}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);padding:16px}
-    .wrap{max-width:860px;margin:0 auto}
-    h1{font-size:22px;margin:4px 0 12px}
-    .hint{color:var(--muted);margin:0 0 16px}
-    .card{background:var(--card);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
-    label{display:block;font-weight:600;margin-bottom:6px}
-    input[type="text"], input[type="email"], textarea, select{
-      width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;outline:none;font-size:14px}
-line-height: 1.5; /* <-- CSS BARU */
-    }
-    textarea{min-height:110px;resize:vertical}
-    .row{display:grid;gap:10px}
-    @media(min-width:720px){.row.two{grid-template-columns:1fr 1fr}}
-    .btnbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-    button{background:var(--pri);color:var(--priText);border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
-    button:disabled{background:#a5b4fc;cursor:not-allowed;} /* <-- CSS BARU */
-    .ok{color:#10b981;font-weight:600}
-    .err{color:#ef4444;font-weight:600}
-    .small{font-size:12px;color:var(--muted)}
-    .spin{display:inline-block;width:16px;height:16px;border:2px solid #d1d5db;border-top-color:#111;border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px}
-    @keyframes sp{to{transform:rotate(360deg)}}
-    
-    /* === CSS BARU === */
-    #result-card { display: none; } /* Awalnya sembunyi */
-    #sermon-output {
-        white-space: pre-wrap;      /* Agar paragraf rapi */
-        word-wrap: break-word;      /* Agar tidak overflow */
-        background: #f9f9f9;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        padding: 12px;
-        max-height: 60vh;           /* Batas tinggi, bisa di-scroll */
-        overflow-y: auto;
-        font-size: 14px;
-        line-height: 1.6;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Susun Khotbah • Theos</title>
+  <style>
+    :root{--bg:#f3f3f3;--text:#111;--muted:#6b7280;--card:#fff;--pri:#2481CC;--priText:#fff}
+    *{box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);padding:16px}
+    .wrap{max-width:860px;margin:0 auto}
+    h1{font-size:22px;margin:4px 0 12px}
+    .hint{color:var(--muted);margin:0 0 16px}
+    .card{background:var(--card);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input[type="text"], textarea, select{
+      width:100%;padding:12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;outline:none;font-size:14px}
+    textarea{min-height:110px;resize:vertical}
+    .row{display:grid;gap:10px}
+    @media(min-width:720px){.row.two{grid-template-columns:1fr 1fr}}
+    .btnbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    button{background:var(--pri);color:var(--priText);border:none;padding:10px 14px;border-radius:10px;font-weight:600;cursor:pointer}
+    .ok{color:#10b981;font-weight:600}
+    .err{color:#ef4444;font-weight:600}
+    .small{font-size:12px;color:var(--muted)}
+    .spin{display:inline-block;width:16px;height:16px;border:2px solid #d1d5db;border-top-color:#111;border-radius:50%;animation:sp 1s linear infinite;vertical-align:-3px;margin-right:8px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+  </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Susun Khotbah</h1>
-  <p class="hint" id="hi">Masukkan minimal <b>Tema</b>. Kolom lain opsional. Klik “Susun Khotbah (AI)”.</p>
+  <h1>Susun Khotbah</h1>
+  <p class="hint" id="hi">Masukkan minimal <b>Tema</b>. Kolom lain opsional. Klik “Susun Khotbah (AI)”.</p>
 
-    <div class="card" id="form-card">
-    <div class="row two">
-      <div>
-        <label for="tema">Tema <span class="small">(wajib)</span></label>
-        <input id="tema" type="text" placeholder="Mis. Hidup oleh Kasih Karunia" required />
-      </div>
-      <div>
-        <label for="judul">Judul (opsional)</label>
-        <input id="judul" type="text" placeholder="Mis. Dari Dosa ke Anugerah" />
-      </div>
-    </div>
-
-    <div class="row two">
-      <div>
-        <label for="ayat">Ayat Referensi (opsional)</label>
-        <input id="ayat" type="text" placeholder="Ef 2:8–10; Rm 5:1–2; Yoh 3:16" />
-      </div>
-      <div>
-        <label for="durasi">Perkiraan Durasi</label>
-        <select id="durasi">
-          <option value="10">10 menit (ringkas)</option>
-          <option value="20" selected>20 menit (sedang)</option>
-          <option value="30">30 menit (panjang)</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="row">
-      <div>
-        <label for="pendahuluan">Pendahuluan (opsional)</label>
-        <textarea id="pendahuluan" placeholder="Pengantar / konteks jemaat bila ada…"></textarea>
-      </div>
-      <div>
-        <label for="poin">Arah/Poin Khotbah (opsional)</label>
-        <textarea id="poin" placeholder="Tulis poin yang ingin ditekankan (mis. identitas di dalam Kristus, tidak di bawah hukum… )"></textarea>
-      </div>
-      <div>
-        <label for="aplikasi">Aplikasi (opsional)</label>
-        <textarea id="aplikasi" placeholder="Target aplikasi: pribadi, keluarga, marketplace, generasi muda, dsb."></textarea>
-      </div>
-      <div>
-        <label for="penutup">Penutup (opsional)</label>
-        <textarea id="penutup" placeholder="Nada ajakan, doa, altar call, dsb."></textarea>
-      </div>
-    </div>
-
-    <div class="btnbar">
-      <button id="btnAI">Susun Khotbah (AI)</button>
-    </div>
-    <p id="status"></p>
-  </div>
-
-  <div id="result-card">
-    <div class="card">
-        <h2>Hasil Eksegesis & Naskah Khotbah</h2>
-        <pre id="sermon-output"></pre>
+  <div class="card">
+    <div class="row two">
+      <div>
+        <label for="tema">Tema <span class="small">(wajib)</span></label>
+        <input id="tema" type="text" placeholder="Mis. Hidup oleh Kasih Karunia" required />
+      </div>
+      <div>
+        <label for="judul">Judul (opsional)</label>
+        <input id="judul" type="text" placeholder="Mis. Dari Dosa ke Anugerah" />
+      </div>
     </div>
-    
-    <div class="card">
-        <label for="email">Kirim Salinan ke Email</label>
-        <input type="email" id="email" placeholder="Masukkan alamat email Anda..." />
-        <div class="btnbar">
-            <button id="btnEmail">Kirim ke Email</button>
-        </div>
-        <p id="email-status"></p>
+
+    <div class="row two">
+      <div>
+        <label for="ayat">Ayat Referensi (opsional)</label>
+        <input id="ayat" type="text" placeholder="Ef 2:8–10; Rm 5:1–2; Yoh 3:16" />
+      </div>
+      <div>
+        <label for="durasi">Perkiraan Durasi</label>
+        <select id="durasi">
+          <option value="10">10 menit (ringkas)</option>
+          <option value="20" selected>20 menit (sedang)</option>
+          <option value="30">30 menit (panjang)</option>
+        </select>
+      </div>
     </div>
+
+    <div class="row">
+      <div>
+        <label for="pendahuluan">Pendahuluan (opsional)</label>
+        <textarea id="pendahuluan" placeholder="Pengantar / konteks jemaat bila ada…"></textarea>
+      </div>
+      <div>
+        <label for="poin">Arah/Poin Khotbah (opsional)</label>
+        <textarea id="poin" placeholder="Tulis poin yang ingin ditekankan (mis. identitas di dalam Kristus, tidak di bawah hukum… )"></textarea>
+      </div>
+      <div>
+        <label for="aplikasi">Aplikasi (opsional)</label>
+        <textarea id="aplikasi" placeholder="Target aplikasi: pribadi, keluarga, marketplace, generasi muda, dsb."></textarea>
+      </div>
+      <div>
+        <label for="penutup">Penutup (opsional)</label>
+        <textarea id="penutup" placeholder="Nada ajakan, doa, altar call, dsb."></textarea>
+      </div>
+    </div>
+
+    <div class="btnbar">
+      <button id="btnAI">Susun Khotbah (AI)</button>
+    </div>
+    <p id="status"></p>
   </div>
-
 </div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <script>
-  const tg = window.Telegram?.WebApp; tg?.ready();
-  const user = tg?.initDataUnsafe?.user;
-  if(user?.first_name){ document.getElementById('hi').textContent = `Halo, ${user.first_name}. Masukkan minimal Tema, lalu klik tombol di bawah.`; }
+  const tg = window.Telegram?.WebApp; tg?.ready();
+  const user = tg?.initDataUnsafe?.user;
+  if(user?.first_name){ document.getElementById('hi').textContent = `Halo, ${user.first_name}. Masukkan minimal Tema, lalu klik tombol di bawah.`; }
 
-  const el = id => document.getElementById(id);
-  let currentSermonText = ""; // <-- VARIABEL BARU: Menyimpan hasil AI
+  const el = id => document.getElementById(id);
+  const st = el('status');
 
-  // FUNGSI STATUS YANG DIMODIFIKASI: Bisa target ID elemen
-  function status(msg, type='ok', elId='status'){
-    const targetEl = el(elId);
-    if (!targetEl) return;
-    targetEl.innerHTML = type==='ok' ? `<span class="ok">${msg}</span>` : `<span class="err">${msg}</span>`;
-    if(type==='ok') tg?.HapticFeedback?.notificationOccurred('success');
-    if(type!=='ok') tg?.HapticFeedback?.notificationOccurred('error');
-    
-    // Hapus pesan status setelah 3 detik jika bukan error
-    if(type === 'ok') {
-        setTimeout(() => { targetEl.innerHTML = ''; }, 3000);
-    }
-  }
+  function status(msg, type='ok'){
+    st.innerHTML = type==='ok' ? `<span class="ok">${msg}</span>` : `<span class="err">${msg}</span>`;
+    if(type==='ok') tg?.HapticFeedback?.notificationOccurred('success');
+    if(type!=='ok') tg?.HapticFeedback?.notificationOccurred('error');
+    // Pesan status tidak hilang otomatis agar pengguna tahu proses selesai
+  }
 
-  function getForm(){
-    return {
-      tema: el('tema').value.trim(),
-      judul: el('judul').value.trim(),
-      ayat: el('ayat').value.trim(),
-      durasi_menit: +el('durasi').value,
-      pendahuluan: el('pendahuluan').value.trim(),
-      poin: el('poin').value.trim(),
-      aplikasi: el('aplikasi').value.trim(),
-      penutup: el('penutup').value.trim(),
-    };
-  }
+  function getForm(){
+    return {
+      tema: el('tema').value.trim(),
+      judul: el('judul').value.trim(),
+      ayat: el('ayat').value.trim(),
+      durasi_menit: +el('durasi').value,
+      pendahuluan: el('pendahuluan').value.trim(),
+      poin: el('poin').value.trim(),
+      aplikasi: el('aplikasi').value.trim(),
+      penutup: el('penutup').value.trim(),
+    };
+  }
 
-  // === FUNGSI UTAMA (DIUBAH) ===
-  async function generateAI(){
-    const f = getForm();
-    if(!f.tema){ status('Tema wajib diisi.', 'err'); return; }
+  // === Fungsi Utama AI Generate ===
+  async function generateAI(){
+    const f = getForm();
+    if(!f.tema){ status('Tema wajib diisi.', 'err'); return; }
 
-    const btn = el('btnAI');
-    const old = btn.innerHTML; btn.disabled = true;
-    btn.innerHTML = `<span class="spin"></span>Menyusun khotbah...`;
-    status('Sedang memproses... mohon tunggu.', 'ok'); // <-- Pesan loading
-    
-    if(tg?.MainButton){
-        tg.MainButton.showProgress();
-        tg.MainButton.disable();
-    }
-
-    try{
-      const payload = {
-        type: 'sermon_generate',
-        user_id: user?.id || null,
-        username: user?.username || null,
-        first_name: user?.first_name || null,
-        faith_lens: 'kasih_karunia',
-        input: f
-      };
-
-      const res = await fetch('https://theos-automata.com/webhook/0c67ca7d-7b72-493b-bab2-2025ffc559cb', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
-
-      if(!res.ok) {
-        const errData = await res.text(); // Coba baca error
-        throw new Error(`Webhook merespons: ${res.status}. ${errData}`);
-      }
-
-      // === PERUBAHAN UTAMA DI SINI ===
-      const result = await res.json(); // Ambil data JSON dari n8n
-      
-      // Asumsi n8n mengembalikan: { "outputText": "..." }
-      if (!result.outputText) {
-          throw new Error('Respons dari server tidak memiliki outputText.');
-      }
-      
-      currentSermonText = result.outputText; // Simpan ke variabel global
-      
-      // Tampilkan hasil
-      el('sermon-output').innerText = currentSermonText;
-      
-      // Sembunyikan form, tampilkan hasil
-      el('form-card').style.display = 'none';
-      el('result-card').style.display = 'block';
-      el('hi').innerText = 'Khotbah Anda telah berhasil disusun.'; // Ubah hint
-      status('Sukses! Naskah khotbah ada di bawah.', 'ok');
-      
-      tg?.HapticFeedback?.notificationOccurred('success');
-      
-      // Sembunyikan MainButton karena interaksi selesai
-      tg?.MainButton?.hide();
-
-    }catch(e){
-      status('Gagal menyusun: '+e.message,'err');
-    }finally{
-      // Pulihkan tombol jika masih di halaman form (mis. saat error)
-      if (el('form-card').style.display !== 'none') {
-          btn.disabled = false; btn.innerHTML = old;
-      }
-      if(tg?.MainButton){
-        tg.MainButton.hideProgress();
-        tg.MainButton.enable(); // Aktifkan lagi jika error
-        // MainButton akan disembunyikan di 'try' jika sukses
-      }
-    }
-  }
-
-  // === FUNGSI BARU UNTUK KIRIM EMAIL ===
-  async function sendEmail() {
-    const btn = el('btnEmail');
-    const email = el('email').value.trim();
-    
-    if (!email) {
-        status('Email wajib diisi.', 'err', 'email-status');
-        return;
-    }
-    
-    // Validasi email sederhana
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        status('Format email tidak valid.', 'err', 'email-status');
-        return;
-    }
-
+    const btn = el('btnAI');
     const old = btn.innerHTML; btn.disabled = true;
-    btn.innerHTML = `<span class="spin"></span>Mengirim...`;
+    btn.innerHTML = `<span class="spin"></span>Menyusun & mengirim…`;
     
-    try {
-        const payload = {
-            emailAddress: email,
-            sermonText: currentSermonText,
-            tema: el('tema').value,
-            judul: el('judul').value
-        };
-        
-        // !! GANTI DENGAN URL WEBHOOK EMAIL ANDA !!
-        const res = await fetch('https://theos-automata.com/webhook/URL_WEBHOOK_EMAIL_BARU', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify(payload)
-        });
-        
-        if (!res.ok) throw new Error(`Server merespons dengan status ${res.status}.`);
-        
-        status('Khotbah berhasil dikirim ke email!', 'ok', 'email-status');
-        btn.innerHTML = 'Terkirim!';
-        // Biarkan tombol disable setelah sukses kirim
+    // Tampilkan MainButton Telegram dengan loading
+    if(tg?.MainButton){
+        tg.MainButton.showProgress();
+        tg.MainButton.disable();
+    }
 
-    } catch (e) {
-        status('Gagal mengirim: ' + e.message, 'err', 'email-status');
-        btn.disabled = false; btn.innerHTML = old; // Pulihkan tombol jika error
+    try{
+      const payload = {
+        type: 'sermon_generate',
+        user_id: user?.id || null,
+        username: user?.username || null,
+        first_name: user?.first_name || null,
+        faith_lens: 'kasih_karunia',
+        input: f
+      };
+
+      const res = await fetch('https://theos-automata.com/webhook/0c67ca7d-7b72-493b-bab2-2025ffc559cb', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+
+      if(!res.ok) throw new Error(`Webhook merespons dengan status ${res.status}.`);
+
+      // Karena naskah dikirim langsung ke chat, beri notifikasi sukses & tutup aplikasi.
+      status('Sukses! Naskah khotbah telah dikirim ke chat Anda.','ok');
+      
+      // Beri waktu 1.5 detik agar pengguna sempat baca pesan sukses, lalu tutup.
+      setTimeout(() => {
+        tg?.close();
+      }, 1500);
+
+    }catch(e){
+      status('Gagal menyusun: '+e.message,'err');
+    }finally{
+      btn.disabled = false; btn.innerHTML = old;
+      if(tg?.MainButton){
+        tg.MainButton.hideProgress();
+        tg.MainButton.enable();
+      }
     }
   }
 
-  // === EVENT LISTENERS ===
-  el('btnAI').addEventListener('click', generateAI);
-  el('btnEmail').addEventListener('click', sendEmail); // <-- BARU
+  // Hubungkan fungsi ke tombol
+  el('btnAI').addEventListener('click', generateAI);
 
-  // Gunakan MainButton Telegram sebagai tombol utama
-  if(tg){
-    tg.MainButton.setText('Susun & Kirim Khotbah');
-    tg.MainButton.onClick(generateAI);
-    tg.MainButton.show();
-  }
+  // Gunakan MainButton Telegram sebagai tombol utama
+  if(tg){
+    tg.MainButton.setText('Susun & Kirim Khotbah');
+    tg.MainButton.onClick(()=>generateAI());
+    tg.MainButton.show();
+  }
 </script>
 </body>
 </html>
